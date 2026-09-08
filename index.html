@@ -21,6 +21,7 @@ header{display:flex;justify-content:space-between;align-items:center;gap:8px;pad
 h1{font-size:16px;margin:0;white-space:nowrap}
 #songName{color:var(--mut);font-size:13px;max-width:55%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .hdBtn{display:none}
+.leftCol{display:contents}
 .slotBtns{display:flex;gap:6px;margin-top:6px}
 .slotBtns button{flex:1;height:32px;padding:0 8px;font-size:13px;border-radius:8px}
 .slotBtns .hdDel{flex:0 0 40px}
@@ -134,15 +135,20 @@ input[type=range]{width:100%;margin:8px 0 2px;accent-color:var(--acc);height:24p
 /* landscape: everything important on one screen, three columns */
 @media (min-width:640px) and (orientation:landscape){
   .wrap{max-width:none;padding:6px 8px;height:100vh;height:100dvh;box-sizing:border-box;grid-template-columns:0.9fr 1.3fr 1.15fr;
-    grid-template-rows:auto auto minmax(0,1fr);gap:6px;align-items:stretch;
-    grid-template-areas:"bpm sides guide" "meter pad guide" "slots pad guide"}
+    grid-template-rows:auto minmax(0,1fr);gap:6px;align-items:stretch;
+    grid-template-areas:"left sides guide" "left pad guide"}
+  .leftCol{display:flex;flex-direction:column;gap:6px;grid-area:left;min-height:0}
+  .bpmCard,.meter{flex:none} .slotsCard{flex:1;min-height:0}
   .slotsCard,.padCard,.guideCard,.bpmCard{display:flex;flex-direction:column;min-height:0}
-  .bpmCard{justify-content:center}
+  .bpmCard{justify-content:center;padding:8px 10px}
+  .bpmNum{font-size:38px;min-width:86px} .round{width:36px;height:36px;font-size:19px}
+  .bpmCard input[type=range]{height:20px} .tap,.start{height:42px;font-size:16px}
+  .slots button{min-height:26px} .slots button .s{font-size:8.5px}
   .cardHead,.vrow,.slotBtns{flex:none}
   .slots{flex:1;grid-auto-rows:1fr;min-height:0} .slots button{height:auto;min-height:30px}
   .keys{flex:1;grid-template-columns:repeat(4,1fr);grid-auto-rows:1fr;min-height:0;gap:6px} .keys button{height:auto;min-height:28px}
   .addSec{flex:1;grid-auto-rows:1fr;min-height:0} .addSec button{height:auto;min-height:36px}
-  header{display:none} .bpmCard{grid-area:bpm} .meter{grid-area:meter} .slotsCard{grid-area:slots}
+  header{display:none}
   .meter{gap:6px} .light{width:28px;height:28px} .lights{gap:6px;justify-content:space-between} .lights.six .light{width:24px;height:24px}
   .light.a0::after{left:6px;right:6px}
   .meter .sig{flex:1 1 auto;width:100%} .meter .sig button{flex:1;height:32px;padding:0;font-size:13px}
@@ -181,6 +187,7 @@ input[type=range]{width:100%;margin:8px 0 2px;accent-color:var(--acc);height:24p
 <div class="wrap">
   <header><h1>Split Metronome</h1><span id="songName">unsaved</span></header>
 
+  <div class="leftCol">
   <div class="card bpmCard">
     <div class="bpmRow">
       <button class="round" id="bpmDown" aria-label="slower">&minus;</button>
@@ -208,6 +215,7 @@ input[type=range]{width:100%;margin:8px 0 2px;accent-color:var(--acc);height:24p
     <div class="slots" id="slots"></div>
     <div class="slotBtns"><button class="assignBtn" id="hdAssign">assign</button><button class="hdBtn" id="hdSave">Save</button><button class="hdBtn hdDel" id="hdDel" aria-label="delete song">&times;</button></div>
     <div class="sndPop slotPop" id="slotPop" hidden></div>
+  </div>
   </div>
 
   <div class="sides">
