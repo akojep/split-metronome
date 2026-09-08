@@ -34,10 +34,25 @@ h1{font-size:16px;margin:0;white-space:nowrap}
 .slots button .s{font-size:9px;color:var(--mut);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .slots button.empty .n{color:var(--mut);font-weight:400}
 .slots button.cur{background:var(--acc);color:#000} .slots button.cur .s{color:#000}
-.slots button.pick{box-shadow:0 0 0 2px var(--acc) inset}
-.slotPop{left:8px;right:8px;top:8px;max-height:220px;overflow:auto}
-.slotPop button{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.slotPop .clr{color:var(--danger)}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:20;display:flex;align-items:center;justify-content:center;padding:14px}
+.modal[hidden]{display:none}
+.modalBox{background:var(--card);border-radius:16px;width:100%;max-width:640px;max-height:92%;display:flex;flex-direction:column;box-shadow:0 12px 40px rgba(0,0,0,.6)}
+.modalHead{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid #262b35}
+.modalHead .ttl{color:var(--acc);font-size:15px}
+.modalTip{flex:1;font-size:11px;color:var(--mut);min-width:0}
+.modalClose{height:32px;width:36px;padding:0;font-size:18px;border-radius:9px;color:var(--mut)}
+.modalBody{overflow:auto;padding:6px 12px 10px}
+.srow{display:flex;align-items:center;gap:8px;padding:6px 0;border-top:1px solid #262b35}
+.srow:first-child{border-top:0}
+.srow .sname{flex:1;min-width:0;height:40px;text-align:left;padding:0 10px;display:flex;flex-direction:column;justify-content:center;gap:2px;line-height:1.1}
+.srow .sname b{font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.srow .sname small{font-size:11px;color:var(--mut)}
+.srow .sname.cur{background:var(--acc);color:#000} .srow .sname.cur small{color:#000}
+.sslots{display:flex;gap:4px;flex:none}
+.sslots button{width:32px;height:32px;padding:0;font-size:13px;border-radius:8px;font-weight:700}
+.sslots button.in{background:var(--acc);color:#000}
+.srow .sdel{width:32px;height:32px;padding:0;font-size:16px;border-radius:8px;color:var(--mut);flex:none}
+.modalEmpty{color:var(--mut);font-size:13px;padding:14px 4px;text-align:center}
 .card{background:var(--card);border-radius:14px;padding:12px}
 button{font:inherit;color:var(--fg);background:var(--btn);border:0;border-radius:10px;padding:0 12px;height:44px;font-size:16px;cursor:pointer;touch-action:manipulation}
 button:active{transform:scale(.97);filter:brightness(1.25)}
@@ -214,7 +229,6 @@ input[type=range]{width:100%;margin:8px 0 2px;accent-color:var(--acc);height:24p
   <div class="card slotsCard">
     <div class="slots" id="slots"></div>
     <div class="slotBtns"><button class="assignBtn" id="hdAssign">assign</button><button class="hdBtn" id="hdSave">Save</button><button class="hdBtn hdDel" id="hdDel" aria-label="delete song">&times;</button></div>
-    <div class="sndPop slotPop" id="slotPop" hidden></div>
   </div>
   </div>
 
@@ -259,6 +273,12 @@ input[type=range]{width:100%;margin:8px 0 2px;accent-color:var(--acc);height:24p
 
 </div>
 <div id="toast"></div>
+<div class="modal" id="songModal" hidden>
+  <div class="modalBox">
+    <div class="modalHead"><span class="ttl">Saved songs</span><span class="modalTip">tap a number to put the song in that slot, tap the name to load</span><button class="modalClose" id="modalClose" aria-label="close">&times;</button></div>
+    <div class="modalBody" id="songRows"></div>
+  </div>
+</div>
 
 <script src="guide-voices.js?v=3"></script>
 <script>
@@ -836,8 +856,8 @@ function deleteSong(name){
   if(songName===name){ songName=''; $('songName').textContent='unsaved'; }
   renderSongs(); persist();
 }
-/* ---------- six quick slots ---------- */
-var SLOTS_KEY='splitmetro.slots', assignMode=false;
+/* ---------- six quick slots + saved-songs window ---------- */
+var SLOTS_KEY='splitmetro.slots';
 function loadSlots(){ try{ var a=JSON.parse(localStorage.getItem(SLOTS_KEY)||'[]'); return [0,1,2,3,4,5].map(function(i){ return typeof a[i]==='string' ? a[i] : ''; }); }catch(e){ return ['','','','','','']; } }
 function storeSlots(a){ localStorage.setItem(SLOTS_KEY, JSON.stringify(a)); }
 function buildSlots(){
@@ -847,48 +867,63 @@ function buildSlots(){
       var b=document.createElement('button'); b.dataset.i=i;
       var n=document.createElement('span'); n.className='n'; var s=document.createElement('span'); s.className='s';
       b.appendChild(n); b.appendChild(s);
-      b.addEventListener('click', function(e){ e.stopPropagation(); if(assignMode) openSlotPop(i); else loadSlot(i); });
+      b.addEventListener('click', function(){ loadSlot(i); });
       box.appendChild(b);
     })(i);
   }
-  $('hdAssign').addEventListener('click', function(e){ e.stopPropagation(); setAssign(!assignMode); });
+  $('hdAssign').addEventListener('click', openSongModal);
+  $('modalClose').addEventListener('click', closeSongModal);
+  $('songModal').addEventListener('click', function(e){ if(e.target===this) closeSongModal(); });
   renderSlots();
 }
-function setAssign(on){ assignMode=on; $('hdAssign').classList.toggle('on', on); if(!on) $('slotPop').hidden=true; renderSlots(); if(on) toast('Tap a slot, then pick a song'); }
 function renderSlots(){
   var slots=loadSlots(), bs=$('slots').children, names={};
   loadSongs().forEach(function(sg){ names[sg.name]=true; });
   for(var i=0;i<bs.length;i++){
     var nm=slots[i], ok=nm && names[nm];
     bs[i].querySelector('.n').textContent=(i+1);
-    bs[i].querySelector('.s').textContent= nm ? (ok ? nm : nm+' (missing)') : (assignMode ? 'assign' : 'empty');
+    bs[i].querySelector('.s').textContent= nm ? (ok ? nm : nm+' (missing)') : 'empty';
     bs[i].classList.toggle('empty', !nm);
-    bs[i].classList.toggle('cur', !!nm && nm===songName && !assignMode);
-    bs[i].classList.toggle('pick', assignMode);
+    bs[i].classList.toggle('cur', !!nm && nm===songName);
   }
 }
 function loadSlot(i){
-  var nm=loadSlots()[i]; if(!nm){ toast('Slot '+(i+1)+' is empty. Tap assign, then the slot.'); return; }
+  var nm=loadSlots()[i]; if(!nm){ toast('Slot '+(i+1)+' is empty. Tap assign to fill it.'); return; }
   var sg=loadSongs().filter(function(s){ return s.name===nm; })[0];
   if(!sg){ toast('"'+nm+'" was deleted'); return; }
   loadSong(sg);
 }
-function openSlotPop(i){
-  var pop=$('slotPop'); pop.innerHTML='';
-  var list=loadSongs().sort(function(a,b){ return a.name.localeCompare(b.name); });
-  var h=document.createElement('div'); h.className='gEmptyT'; h.textContent='Slot '+(i+1)+': choose a song'; h.style.cssText='font-size:12px;color:var(--mut);padding:2px 6px'; pop.appendChild(h);
-  if(!list.length){ var e=document.createElement('div'); e.style.cssText='font-size:13px;padding:6px'; e.textContent='No saved songs yet. Save one first.'; pop.appendChild(e); }
+function openSongModal(){ renderSongModal(); $('songModal').hidden=false; }
+function closeSongModal(){ $('songModal').hidden=true; }
+function renderSongModal(){
+  var box=$('songRows'); box.innerHTML='';
+  var list=loadSongs().sort(function(a,b){ return a.name.localeCompare(b.name); }), slots=loadSlots();
+  if(!list.length){ var e=document.createElement('div'); e.className='modalEmpty'; e.textContent='No saved songs yet. Set things up, then tap Save.'; box.appendChild(e); return; }
   list.forEach(function(sg){
-    var b=document.createElement('button'); b.textContent=sg.name;
-    b.addEventListener('click', function(ev){ ev.stopPropagation(); var a=loadSlots(); a[i]=sg.name; storeSlots(a); setAssign(false); toast('Slot '+(i+1)+' = '+sg.name); });
-    pop.appendChild(b);
+    var row=document.createElement('div'); row.className='srow';
+    var nm=document.createElement('button'); nm.className='sname'+(sg.name===songName?' cur':'');
+    var b=document.createElement('b'); b.textContent=sg.name; var sm=document.createElement('small');
+    sm.textContent=sg.bpm+' bpm  '+normSig(sg)+(sg.pad && sg.pad.on ? '  pad '+KEYS[normPad(sg.pad).key] : '');
+    nm.appendChild(b); nm.appendChild(sm);
+    nm.addEventListener('click', function(){ loadSong(sg); renderSongModal(); });
+    var ss=document.createElement('div'); ss.className='sslots';
+    for(var i=0;i<6;i++){
+      (function(i){
+        var sb=document.createElement('button'); sb.textContent=i+1; sb.classList.toggle('in', slots[i]===sg.name);
+        sb.addEventListener('click', function(){
+          var a=loadSlots();
+          if(a[i]===sg.name){ a[i]=''; toast('Slot '+(i+1)+' cleared'); }
+          else { a=a.map(function(n){ return n===sg.name ? '' : n; }); a[i]=sg.name; toast('Slot '+(i+1)+' = '+sg.name); }   /* one slot per song */
+          storeSlots(a); renderSlots(); renderSongModal();
+        });
+        ss.appendChild(sb);
+      })(i);
+    }
+    var del=document.createElement('button'); del.className='sdel'; del.innerHTML='&times;';
+    del.addEventListener('click', function(){ deleteSong(sg.name); renderSongModal(); });
+    row.appendChild(nm); row.appendChild(ss); row.appendChild(del); box.appendChild(row);
   });
-  var c=document.createElement('button'); c.className='clr'; c.textContent='clear slot';
-  c.addEventListener('click', function(ev){ ev.stopPropagation(); var a=loadSlots(); a[i]=''; storeSlots(a); setAssign(false); });
-  pop.appendChild(c);
-  pop.hidden=false;
 }
-document.addEventListener('click', function(){ if(assignMode) setAssign(false); });
 
 function renderSongs(){
   var ul=$('songs'); ul.innerHTML='';
