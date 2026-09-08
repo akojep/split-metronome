@@ -249,7 +249,6 @@ input[type=range]{width:100%;margin:8px 0 2px;accent-color:var(--acc);height:24p
     <ul id="songs"></ul>
   </div>
 
-  <div class="hint">Use earphones for true left / right separation. Left = higher click, right = lower click.<br>BPM is always the quarter note. In 6/8 the six lights are the eighth-note counts, the 1/4 button clicks the main beats on counts 1 and 4, and the guide counts all six like MultiTracks ("count to 4" leaves 5 and 6 free for a sung pickup).<br>Pad: tap a key to play it, tap the lit key to stop. Guide: tap a name while running and it calls on the next 1.</div>
 </div>
 <div id="toast"></div>
 
@@ -515,7 +514,7 @@ function start(){
   scheduler();
   timerId = setInterval(scheduler, INTERVAL);
   requestAnimationFrame(draw);
-  keepAwake();
+  keepAwake(); lockLandscape();
   $('startBtn').textContent='STOP'; $('startBtn').classList.add('running');
   renderGuideStatus(barIndex);
 }
@@ -568,11 +567,21 @@ function buildLights(){
 
 /* ---------- wake lock ---------- */
 var wakeLock=null;
-function keepAwake(){ if(!('wakeLock' in navigator)) return; navigator.wakeLock.request('screen').then(function(w){ wakeLock=w; }).catch(function(){}); }
+function needAwake(){ return running || S.pad.on; }
+function keepAwake(){
+  if(!('wakeLock' in navigator) || wakeLock) return;
+  navigator.wakeLock.request('screen').then(function(w){
+    wakeLock=w;
+    w.addEventListener('release', function(){ wakeLock=null; });   /* the phone can drop it; we re-ask below */
+  }).catch(function(){});
+}
 function releaseWake(){ if(wakeLock){ wakeLock.release().catch(function(){}); wakeLock=null; } }
+setInterval(function(){ if(needAwake() && !wakeLock && document.visibilityState==='visible') keepAwake(); }, 5000);
 document.addEventListener('visibilitychange', function(){
-  if(document.visibilityState==='visible' && (running || S.pad.on)){ if(ctx && ctx.state==='suspended') ctx.resume(); keepAwake(); }
+  if(document.visibilityState==='visible' && needAwake()){ if(ctx && ctx.state==='suspended') ctx.resume(); keepAwake(); }
 });
+/* installed app: prefer landscape when the phone allows it */
+function lockLandscape(){ try{ if(screen.orientation && screen.orientation.lock) screen.orientation.lock('landscape').catch(function(){}); }catch(e){} }
 
 /* ---------- bpm ---------- */
 function setBpm(v, silent){
