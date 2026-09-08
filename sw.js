@@ -1,7 +1,7 @@
-var CACHE = 'splitmetro-v29';
-var FILES = ['./', './index.html', './manifest.json', './guide-voices.js', './icon-180.png', './icon-192.png', './icon-512.png'];
+var CACHE = 'splitmetro-v48';
+var FILES = ['./', './index.html', './manifest.json', './guide-voices.js?v=3', './icon-180.png', './icon-192.png', './icon-512.png'];
 self.addEventListener('install', function(e){
-  e.waitUntil(caches.open(CACHE).then(function(c){ return c.addAll(FILES); }).then(function(){ return self.skipWaiting(); }));
+  e.waitUntil(caches.open(CACHE).then(function(c){ return c.addAll(FILES.map(function(f){ return new Request(f, {cache:'reload'}); })); }).then(function(){ return self.skipWaiting(); }));
 });
 self.addEventListener('activate', function(e){
   e.waitUntil(caches.keys().then(function(keys){

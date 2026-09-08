@@ -20,7 +20,23 @@ body{padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-i
 header{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:0 2px}
 h1{font-size:16px;margin:0;white-space:nowrap}
 #songName{color:var(--mut);font-size:13px;max-width:55%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.songSel{display:none}
+.hdBtn{display:none}
+.slotBtns{display:flex;gap:6px;margin-top:6px}
+.slotBtns button{flex:1;height:32px;padding:0 8px;font-size:13px;border-radius:8px}
+.slotBtns .hdDel{flex:0 0 40px}
+.assignBtn{color:var(--mut)}
+.assignBtn.on{background:var(--acc);color:#000;font-weight:700}
+.slotsCard{position:relative;padding:8px}
+.slots{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
+.slots button{height:38px;padding:0 4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;line-height:1;min-width:0}
+.slots button .n{font-size:13px;font-weight:700}
+.slots button .s{font-size:9px;color:var(--mut);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.slots button.empty .n{color:var(--mut);font-weight:400}
+.slots button.cur{background:var(--acc);color:#000} .slots button.cur .s{color:#000}
+.slots button.pick{box-shadow:0 0 0 2px var(--acc) inset}
+.slotPop{left:8px;right:8px;top:8px;max-height:220px;overflow:auto}
+.slotPop button{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.slotPop .clr{color:var(--danger)}
 .card{background:var(--card);border-radius:14px;padding:12px}
 button{font:inherit;color:var(--fg);background:var(--btn);border:0;border-radius:10px;padding:0 12px;height:44px;font-size:16px;cursor:pointer;touch-action:manipulation}
 button:active{transform:scale(.97);filter:brightness(1.25)}
@@ -63,6 +79,15 @@ input[type=range]{width:100%;margin:8px 0 2px;accent-color:var(--acc);height:24p
 @keyframes flashSub{0%{transform:scale(1.15);background:currentColor;opacity:.6}100%{transform:scale(1);background:var(--btn)}}
 .mute{height:26px;padding:0 8px;font-size:11px;border-radius:7px;color:var(--mut)}
 .mute.on{background:var(--danger);color:#fff}
+.hbtns{display:flex;gap:4px;align-items:center}
+.gear{height:26px;width:30px;padding:0;font-size:16px;border-radius:7px;color:var(--mut)}
+.gear.open{background:var(--fg);color:#000}
+.side{position:relative}
+.sndPop{position:absolute;right:10px;top:40px;z-index:5;background:#262b35;border-radius:10px;padding:6px;display:grid;gap:4px;box-shadow:0 8px 24px rgba(0,0,0,.55)}
+.sndPop[hidden]{display:none}
+.sndPop button{height:36px;font-size:14px;padding:0 16px;text-align:left;min-width:120px}
+.side.left .sndPop button.sel{background:var(--L);color:#000;font-weight:700}
+.side.right .sndPop button.sel{background:var(--R);color:#000;font-weight:700}
 .subs{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
 .subs button{height:44px;padding:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px}
 .subs button .g{font-size:20px;line-height:1}
@@ -70,7 +95,6 @@ input[type=range]{width:100%;margin:8px 0 2px;accent-color:var(--acc);height:24p
 .subs button.sel{color:#000;font-weight:700}
 .subs button.sel .t{color:#000}
 .side.left .subs button.sel{background:var(--L)} .side.right .subs button.sel{background:var(--R)}
-.side select{margin-top:6px}
 .vrow{display:flex;align-items:center;gap:6px;margin-top:4px;font-size:11px;color:var(--mut)}
 .vrow input[type=range]{flex:1;margin:0;height:22px}
 .vrow b{min-width:22px;text-align:right;font-weight:400}
@@ -84,7 +108,7 @@ input[type=range]{width:100%;margin:8px 0 2px;accent-color:var(--acc);height:24p
 .keys button.sel{background:var(--P);color:#000;font-weight:700}
 .padCard .vrow input{accent-color:var(--P)}
 .addSec{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
-.addSec button{height:38px;font-size:13px;padding:0 3px}
+.addSec button{height:38px;font-size:13px;padding:0 3px;background:#333a48;color:#fff;font-weight:600}
 .addSec button.pending{background:var(--G);color:#000;font-weight:700}
 .addSec button.fired{background:#8a6d1f;color:#000}
 .guideCard .vrow input{accent-color:var(--G)}
@@ -109,32 +133,53 @@ input[type=range]{width:100%;margin:8px 0 2px;accent-color:var(--acc);height:24p
 
 /* landscape: everything important on one screen, three columns */
 @media (min-width:640px) and (orientation:landscape){
-  .wrap{max-width:none;padding:6px 10px 10px;grid-template-columns:1fr 1fr 1.35fr;gap:8px;align-items:start;
-    grid-template-areas:"hd hd hd" "bpm sides pad" "meter sides guide" "songs songs songs" "hint hint hint"}
-  header{grid-area:hd;min-height:30px} .bpmCard{grid-area:bpm} .meter{grid-area:meter}
-  .sides{grid-area:sides;grid-template-columns:1fr;gap:8px}
-  .padCard{grid-area:pad} .guideCard{grid-area:guide} .songsCard{grid-area:songs} .hint{grid-area:hint;display:none}
+  .wrap{max-width:none;padding:6px 8px;height:100vh;height:100dvh;box-sizing:border-box;grid-template-columns:0.9fr 1.3fr 1.15fr;
+    grid-template-rows:auto auto minmax(0,1fr);gap:6px;align-items:stretch;
+    grid-template-areas:"bpm sides guide" "meter pad guide" "slots pad guide"}
+  .slotsCard,.padCard,.guideCard,.bpmCard{display:flex;flex-direction:column;min-height:0}
+  .bpmCard{justify-content:center}
+  .cardHead,.vrow,.slotBtns{flex:none}
+  .slots{flex:1;grid-auto-rows:1fr;min-height:0} .slots button{height:auto;min-height:30px}
+  .keys{flex:1;grid-template-columns:repeat(4,1fr);grid-auto-rows:1fr;min-height:0;gap:6px} .keys button{height:auto;min-height:28px}
+  .addSec{flex:1;grid-auto-rows:1fr;min-height:0} .addSec button{height:auto;min-height:36px}
+  header{display:none} .bpmCard{grid-area:bpm} .meter{grid-area:meter} .slotsCard{grid-area:slots}
+  .meter{gap:6px} .light{width:28px;height:28px} .lights{gap:6px;justify-content:space-between} .lights.six .light{width:24px;height:24px}
+  .light.a0::after{left:6px;right:6px}
+  .meter .sig{flex:1 1 auto;width:100%} .meter .sig button{flex:1;height:32px;padding:0;font-size:13px}
+  .bpmCard input[type=range]{margin:2px 0 0} .go{margin-top:4px}
+  .slots button{min-height:30px}
+  .sides{grid-area:sides;grid-template-columns:1fr;gap:6px}
+  .padCard{grid-area:pad} .guideCard{grid-area:guide} .songsCard{display:none} .hint{display:none}
   .card,.side{padding:8px 10px;border-radius:12px}
+  .side{padding:6px 8px}
+  .sideRow{display:flex;gap:8px;align-items:center}
+  .sideRow .subs{flex:0 0 auto;width:150px}
+  .sideRow .vrow{flex:1;margin-top:0;min-width:0}
+  .sideRow .vrow span{display:none}
+  .sndPop{top:34px}
   .bpmNum{font-size:40px;min-width:90px} .bpmNum small{font-size:10px;margin-top:0}
   .round{width:38px;height:38px;font-size:20px}
   input[type=range]{margin:4px 0 0;height:22px}
   .go{margin-top:6px} .tap,.start{height:44px;font-size:17px;white-space:nowrap}
   .tap .full{display:none} .tap .short{display:inline}
   .legend{display:none}
-  .light{width:28px;height:28px} .lights.six .light{width:24px;height:24px}
-  .sig button{height:34px;padding:0 10px;font-size:14px}
-  .side h2{margin-bottom:6px} .subs button{height:40px}
-  .keys button{height:32px;font-size:14px}
-  .addSec{display:flex;flex-wrap:wrap;gap:4px} .addSec button{height:28px;font-size:11.5px;padding:0 6px;white-space:nowrap;flex:1 0 auto}
+  .side h2{margin-bottom:5px} .subs button{height:40px} .side{padding:7px 8px}
+  .keys button{font-size:14px}
+  .addSec{display:grid;grid-template-columns:repeat(3,1fr);gap:6px} .addSec button{font-size:13px;padding:0 4px;white-space:nowrap}
+  html,body{height:100%;overflow:hidden;overscroll-behavior:none}
+  .songsCard{display:none}
+  .hdBtn{display:block}
+  .hdDel{color:var(--mut)}
+  .slotBtns{margin-top:4px} .slotBtns button{height:28px}
+  .slotsCard{padding:6px 8px}
   .cardHead{margin-bottom:6px}
-  .songSel{display:block;width:auto;max-width:240px;height:30px;font-size:13px;padding:0 8px}
   #songName{display:none}
 }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <header><h1>Split Metronome</h1><select class="songSel" id="songSel" aria-label="load song"></select><span id="songName">unsaved</span></header>
+  <header><h1>Split Metronome</h1><span id="songName">unsaved</span></header>
 
   <div class="card bpmCard">
     <div class="bpmRow">
@@ -159,18 +204,28 @@ input[type=range]{width:100%;margin:8px 0 2px;accent-color:var(--acc);height:24p
     </div>
   </div>
 
+  <div class="card slotsCard">
+    <div class="slots" id="slots"></div>
+    <div class="slotBtns"><button class="assignBtn" id="hdAssign">assign</button><button class="hdBtn" id="hdSave">Save</button><button class="hdBtn hdDel" id="hdDel" aria-label="delete song">&times;</button></div>
+    <div class="sndPop slotPop" id="slotPop" hidden></div>
+  </div>
+
   <div class="sides">
     <div class="side left">
-      <h2><span>LEFT</span><span class="dot" id="dotL"></span><button class="mute" id="muteL">MUTE</button></h2>
-      <div class="subs" id="subsL"></div>
-      <select id="sndL" aria-label="left sound"></select>
-      <div class="vrow"><span>vol</span><input type="range" id="volL" min="0" max="100" value="80"><b id="volLv">80</b></div>
+      <h2><span>LEFT</span><span class="dot" id="dotL"></span><span class="hbtns"><button class="mute" id="muteL">MUTE</button><button class="gear" id="gearL" aria-label="left sound">&#9881;</button></span></h2>
+      <div class="sndPop" id="sndL" hidden></div>
+      <div class="sideRow">
+        <div class="subs" id="subsL"></div>
+        <div class="vrow"><span>vol</span><input type="range" id="volL" min="0" max="100" value="80"><b id="volLv">80</b></div>
+      </div>
     </div>
     <div class="side right">
-      <h2><span>RIGHT</span><span class="dot" id="dotR"></span><button class="mute" id="muteR">MUTE</button></h2>
-      <div class="subs" id="subsR"></div>
-      <select id="sndR" aria-label="right sound"></select>
-      <div class="vrow"><span>vol</span><input type="range" id="volR" min="0" max="100" value="80"><b id="volRv">80</b></div>
+      <h2><span>RIGHT</span><span class="dot" id="dotR"></span><span class="hbtns"><button class="mute" id="muteR">MUTE</button><button class="gear" id="gearR" aria-label="right sound">&#9881;</button></span></h2>
+      <div class="sndPop" id="sndR" hidden></div>
+      <div class="sideRow">
+        <div class="subs" id="subsR"></div>
+        <div class="vrow"><span>vol</span><input type="range" id="volR" min="0" max="100" value="80"><b id="volRv">80</b></div>
+      </div>
     </div>
   </div>
 
@@ -198,7 +253,7 @@ input[type=range]{width:100%;margin:8px 0 2px;accent-color:var(--acc);height:24p
 </div>
 <div id="toast"></div>
 
-<script src="guide-voices.js"></script>
+<script src="guide-voices.js?v=3"></script>
 <script>
 (function(){
 'use strict';
@@ -206,7 +261,7 @@ var $ = function(id){ return document.getElementById(id); };
 var NOTES = [ {id:'q', glyph:'♩', label:'1/4'}, {id:'e', glyph:'♪', label:'1/8'}, {id:'s', glyph:'♬', label:'1/16'} ];
 var SIGS = ['3/4','4/4','6/8'];
 var SOUNDS = [ {id:'beep',label:'Beep'}, {id:'wood',label:'Wood'}, {id:'tick',label:'Tick'}, {id:'snap',label:'Snap'} ];
-var KEYS = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+var KEYS = ['C','C#','D','Eb','E','F','F#','G','G#','A','Bb','B'];
 var STATE_KEY = 'splitmetro.state', SONGS_KEY = 'splitmetro.songs';
 
 var S = { bpm:120, sig:'4/4', accents:defaultAccents(),
@@ -217,7 +272,7 @@ var songName = '';
 
 var SECTIONS = [['intro','Intro'],['verse','Verse'],['prechorus','Pre-Chorus'],['chorus','Chorus'],['bridge','Bridge'],['tag','Tag'],
   ['buildup','Build-up'],['allin','All-in'],['break','Break'],['drumonly','Drum only'],['voiceonly','Voice only'],
-  ['interlude','Interlude'],['instrumental','Instrumental'],['outro','Outro']];
+  ['interlude','Interlude'],['instrumental','Instrumental'],['outro','Outro'],['softchill','Soft chill']];
 function secInfo(id){ for(var i=0;i<SECTIONS.length;i++) if(SECTIONS[i][0]===id) return SECTIONS[i]; return SECTIONS[1]; }
 function normGuide(g){ g=g||{}; return { vol:Math.max(0,Math.min(100, g.vol===undefined ? 80 : (+g.vol||0))), count: g.count!==false, countTo: g.countTo==='4' ? '4' : 'bar', countIn: g.countIn!==false }; }
 function normPad(p){
@@ -358,6 +413,7 @@ function ensureGuide(){
   });
 }
 var pendingCue=null;   /* {id, time, srcs:[]} waiting for the next bar */
+var cueEvents=[];      /* visual events for calls, kept apart from the beat queue so lights never wait behind a call */
 /* maxDur: cut the clip (with a short fade) so fast counts do not overlap */
 function playBuf(b, time, maxDur){
   var s = ctx.createBufferSource(); s.buffer=b;
@@ -383,6 +439,7 @@ function nextBarTime(){
   return beatInBar===0 ? nextBeatTime : nextBeatTime + (n-beatInBar)*countLen();
 }
 function cancelCue(){
+  cueEvents.length=0;
   if(!pendingCue) return;
   pendingCue.srcs.forEach(function(s){ try{ s.stop(); }catch(e){} });
   pendingCue=null;
@@ -391,6 +448,7 @@ function cancelCue(){
 function callSection(id){
   ensureAudio();
   if(!running){ sayGuide(id, ctx.currentTime+0.02); flashCue(id); return; }
+  if(pendingCue && pendingCue.id===id){ cancelCue(); renderGuideStatus(); toast('Cancelled'); return; }   /* same button again = undo */
   cancelCue();
   var t = nextBarTime(), len = countLen(), pos = callPositions();
   var cue = {id:id, time:t, srcs:[]};
@@ -399,8 +457,22 @@ function callSection(id){
   if(S.guide.count) for(var i=1;i<pos.length;i++){
     sayGuide('n'+(i+1), t + pos[i]*len, function(s){ cue.srcs.push(s); }, len);
   }
-  queue.push({time:t, side:null, type:'cue', id:id});
-  queue.sort(function(a,b){ return a.time-b.time; });
+  cueEvents.push({time:t, id:id});
+  renderGuideStatus();
+}
+/* press-and-hold: call right away. Name on the next count, numbers on the rest of this bar, section lands on the next 1 */
+function callSectionNow(id){
+  ensureAudio();
+  if(!running){ sayGuide(id, ctx.currentTime+0.02); flashCue(id); return; }
+  cancelCue();
+  var len = countLen(), n = beatsPerBar(), pos = callPositions(), maxIdx = pos[pos.length-1];
+  var t = nextBeatTime, idx = beatInBar, now = ctx.currentTime;
+  while(idx > 0 && t - len >= now + 0.03){ t -= len; idx--; }   /* earliest upcoming count in this bar */
+  var cue = {id:id, time:t, srcs:[], now:true};
+  pendingCue = cue;
+  sayGuide(id, t, function(s){ cue.srcs.push(s); });
+  if(S.guide.count) for(var i=idx+1; i<n && i<=maxIdx; i++) sayGuide('n'+(i+1), t + (i-idx)*len, function(s){ cue.srcs.push(s); }, len);
+  cueEvents.push({time:t, id:id});
   renderGuideStatus();
 }
 function flashCue(id){
@@ -464,9 +536,13 @@ function draw(){
   var now = ctx.currentTime;
   while(queue.length && queue[0].time <= now){
     var ev = queue.shift();
-    if(ev.type==='cue'){ if(pendingCue && pendingCue.id===ev.id && Math.abs(pendingCue.time-ev.time)<0.001) pendingCue=null; flashCue(ev.id); renderGuideStatus(); }
-    else if(ev.side) flash(dots[ev.side], ev.k===0 ? 'on' : 'sub');
+    if(ev.side) flash(dots[ev.side], ev.k===0 ? 'on' : 'sub');
     else { lightBeat(ev.beat); if(ev.beat===0 && (ev.bar===-1 || ev.bar===0)) renderGuideStatus(ev.bar); }
+  }
+  while(cueEvents.length && cueEvents[0].time <= now){
+    var ce = cueEvents.shift();
+    if(pendingCue && pendingCue.id===ce.id && Math.abs(pendingCue.time-ce.time)<0.001) pendingCue=null;
+    flashCue(ce.id); renderGuideStatus();
   }
   requestAnimationFrame(draw);
 }
@@ -541,12 +617,22 @@ function renderSubs(side){
   for(var i=0;i<bs.length;i++) bs[i].classList.toggle('sel', bs[i].dataset.n===S[side].note);
 }
 function buildSounds(side){
-  var sel = $(side==='left'?'sndL':'sndR'); sel.innerHTML='';
-  SOUNDS.forEach(function(sd){ var o=document.createElement('option'); o.value=sd.id; o.textContent=sd.label+' sound'; sel.appendChild(o); });
-  sel.addEventListener('change', function(){ S[side].sound=sel.value; persist(); if(!running) preview(side); });
+  var cap = side==='left'?'L':'R', pop = $('snd'+cap), gear = $('gear'+cap);
+  pop.innerHTML='';
+  SOUNDS.forEach(function(sd){
+    var b=document.createElement('button'); b.textContent=sd.label; b.dataset.s=sd.id;
+    b.addEventListener('click', function(e){ e.stopPropagation(); S[side].sound=sd.id; renderSounds(side); persist(); if(!running) preview(side); closeSoundPops(); });
+    pop.appendChild(b);
+  });
+  gear.addEventListener('click', function(e){ e.stopPropagation(); var open = pop.hidden; closeSoundPops(); if(open){ pop.hidden=false; gear.classList.add('open'); } });
   renderSounds(side);
 }
-function renderSounds(side){ $(side==='left'?'sndL':'sndR').value = S[side].sound; }
+function closeSoundPops(){ ['L','R'].forEach(function(c){ $('snd'+c).hidden=true; $('gear'+c).classList.remove('open'); }); }
+document.addEventListener('click', closeSoundPops);
+function renderSounds(side){
+  var bs = $(side==='left'?'sndL':'sndR').children;
+  for(var i=0;i<bs.length;i++) bs[i].classList.toggle('sel', bs[i].dataset.s===S[side].sound);
+}
 function renderSide(side){
   var cap = side==='left'?'L':'R';
   $('vol'+cap).value = S[side].vol; $('vol'+cap+'v').textContent = S[side].vol;
@@ -668,7 +754,12 @@ function buildGuide(){
   var add=$('addSec'); add.innerHTML='';
   SECTIONS.forEach(function(sc){
     var b=document.createElement('button'); b.textContent=sc[1]; b.dataset.id=sc[0];
-    b.addEventListener('click', function(){ callSection(sc[0]); });
+    /* tap = call on the next bar; hold = call now */
+    var holdT=null, held=false;
+    b.addEventListener('pointerdown', function(e){ e.preventDefault(); held=false; clearTimeout(holdT); holdT=setTimeout(function(){ held=true; callSectionNow(sc[0]); }, 380); });
+    var up=function(e){ clearTimeout(holdT); if(e.type==='pointerup' && !held) callSection(sc[0]); held=false; };
+    b.addEventListener('pointerup', up); b.addEventListener('pointercancel', up); b.addEventListener('pointerleave', function(){ clearTimeout(holdT); });
+    b.addEventListener('contextmenu', function(e){ e.preventDefault(); });
     add.appendChild(b);
   });
   $('guideVol').addEventListener('input', function(){ S.guide.vol=+this.value; $('guideVolV').textContent=this.value; applyGuideVolume(); persist(); });
@@ -694,7 +785,7 @@ function renderGuideStatus(bar){
   var el=$('gStatus'), bs=$('addSec').children;
   for(var i=0;i<bs.length;i++) bs[i].classList.toggle('pending', !!pendingCue && bs[i].dataset.id===pendingCue.id);
   var n = callPositions().length, cnt = S.guide.count ? ' 2…'+n : '';
-  if(pendingCue) el.innerHTML='<b>'+secInfo(pendingCue.id)[1]+cnt+'</b> next bar';
+  if(pendingCue) el.innerHTML='<b>'+secInfo(pendingCue.id)[1]+(pendingCue.now ? '' : cnt)+'</b> '+(pendingCue.now ? 'now' : 'next bar');
   else if(running && guideBarNow===-1) el.innerHTML='<b>count-in</b>';
   else el.textContent = running ? 'tap a name' : 'tap to hear';
 }
@@ -724,17 +815,68 @@ function loadSong(sg){
 function deleteSong(name){
   if(!confirm('Delete "'+name+'"?')) return;
   storeSongs(loadSongs().filter(function(s){ return s.name!==name; }));
+  storeSlots(loadSlots().map(function(n){ return n===name ? '' : n; }));
   if(songName===name){ songName=''; $('songName').textContent='unsaved'; }
   renderSongs(); persist();
 }
+/* ---------- six quick slots ---------- */
+var SLOTS_KEY='splitmetro.slots', assignMode=false;
+function loadSlots(){ try{ var a=JSON.parse(localStorage.getItem(SLOTS_KEY)||'[]'); return [0,1,2,3,4,5].map(function(i){ return typeof a[i]==='string' ? a[i] : ''; }); }catch(e){ return ['','','','','','']; } }
+function storeSlots(a){ localStorage.setItem(SLOTS_KEY, JSON.stringify(a)); }
+function buildSlots(){
+  var box=$('slots'); box.innerHTML='';
+  for(var i=0;i<6;i++){
+    (function(i){
+      var b=document.createElement('button'); b.dataset.i=i;
+      var n=document.createElement('span'); n.className='n'; var s=document.createElement('span'); s.className='s';
+      b.appendChild(n); b.appendChild(s);
+      b.addEventListener('click', function(e){ e.stopPropagation(); if(assignMode) openSlotPop(i); else loadSlot(i); });
+      box.appendChild(b);
+    })(i);
+  }
+  $('hdAssign').addEventListener('click', function(e){ e.stopPropagation(); setAssign(!assignMode); });
+  renderSlots();
+}
+function setAssign(on){ assignMode=on; $('hdAssign').classList.toggle('on', on); if(!on) $('slotPop').hidden=true; renderSlots(); if(on) toast('Tap a slot, then pick a song'); }
+function renderSlots(){
+  var slots=loadSlots(), bs=$('slots').children, names={};
+  loadSongs().forEach(function(sg){ names[sg.name]=true; });
+  for(var i=0;i<bs.length;i++){
+    var nm=slots[i], ok=nm && names[nm];
+    bs[i].querySelector('.n').textContent=(i+1);
+    bs[i].querySelector('.s').textContent= nm ? (ok ? nm : nm+' (missing)') : (assignMode ? 'assign' : 'empty');
+    bs[i].classList.toggle('empty', !nm);
+    bs[i].classList.toggle('cur', !!nm && nm===songName && !assignMode);
+    bs[i].classList.toggle('pick', assignMode);
+  }
+}
+function loadSlot(i){
+  var nm=loadSlots()[i]; if(!nm){ toast('Slot '+(i+1)+' is empty. Tap assign, then the slot.'); return; }
+  var sg=loadSongs().filter(function(s){ return s.name===nm; })[0];
+  if(!sg){ toast('"'+nm+'" was deleted'); return; }
+  loadSong(sg);
+}
+function openSlotPop(i){
+  var pop=$('slotPop'); pop.innerHTML='';
+  var list=loadSongs().sort(function(a,b){ return a.name.localeCompare(b.name); });
+  var h=document.createElement('div'); h.className='gEmptyT'; h.textContent='Slot '+(i+1)+': choose a song'; h.style.cssText='font-size:12px;color:var(--mut);padding:2px 6px'; pop.appendChild(h);
+  if(!list.length){ var e=document.createElement('div'); e.style.cssText='font-size:13px;padding:6px'; e.textContent='No saved songs yet. Save one first.'; pop.appendChild(e); }
+  list.forEach(function(sg){
+    var b=document.createElement('button'); b.textContent=sg.name;
+    b.addEventListener('click', function(ev){ ev.stopPropagation(); var a=loadSlots(); a[i]=sg.name; storeSlots(a); setAssign(false); toast('Slot '+(i+1)+' = '+sg.name); });
+    pop.appendChild(b);
+  });
+  var c=document.createElement('button'); c.className='clr'; c.textContent='clear slot';
+  c.addEventListener('click', function(ev){ ev.stopPropagation(); var a=loadSlots(); a[i]=''; storeSlots(a); setAssign(false); });
+  pop.appendChild(c);
+  pop.hidden=false;
+}
+document.addEventListener('click', function(){ if(assignMode) setAssign(false); });
+
 function renderSongs(){
   var ul=$('songs'); ul.innerHTML='';
   var list=loadSongs().sort(function(a,b){ return a.name.localeCompare(b.name); });
-  /* landscape header dropdown */
-  var sel=$('songSel'); sel.innerHTML='';
-  var o0=document.createElement('option'); o0.value=''; o0.textContent = songName ? songName : 'load song…'; sel.appendChild(o0);
-  list.forEach(function(sg){ if(sg.name===songName) return; var o=document.createElement('option'); o.value=sg.name; o.textContent=sg.name; sel.appendChild(o); });
-  sel.value='';
+  renderSlots();
   if(!list.length){ var e=document.createElement('div'); e.className='empty'; e.textContent='No saved songs yet'; ul.appendChild(e); return; }
   list.forEach(function(sg){
     var li=document.createElement('li'); if(sg.name===songName) li.classList.add('cur');
@@ -774,7 +916,7 @@ function toast(msg){ var t=$('toast'); t.textContent=msg; t.classList.add('show'
 /* ---------- wire up ---------- */
 restore();
 dots.left=$('dotL'); dots.right=$('dotR');
-buildSubs('left'); buildSubs('right'); buildSounds('left'); buildSounds('right'); buildSig(); buildKeys(); buildGuide();
+buildSubs('left'); buildSubs('right'); buildSounds('left'); buildSounds('right'); buildSig(); buildKeys(); buildGuide(); buildSlots();
 renderAll();
 
 holdRepeat($('bpmUp'), function(){ setBpm(S.bpm+1); });
@@ -789,11 +931,8 @@ $('tapBtn').addEventListener('pointerdown', function(e){ e.preventDefault(); tap
 $('startBtn').addEventListener('click', function(){ running ? stop() : start(); });
 $('saveBtn').addEventListener('click', saveSong);
 $('nameIn').addEventListener('keydown', function(e){ if(e.key==='Enter'){ saveSong(); this.blur(); } });
-$('songSel').addEventListener('change', function(){
-  var name=this.value; if(!name) return;
-  var sg=loadSongs().filter(function(s){ return s.name===name; })[0];
-  if(sg) loadSong(sg);
-});
+$('hdSave').addEventListener('click', function(){ var n=prompt('Song name', songName||''); if(n && n.trim()){ $('nameIn').value=n.trim(); saveSong(); } });
+$('hdDel').addEventListener('click', function(){ if(songName) deleteSong(songName); else toast('No song loaded'); });
 $('padVol').addEventListener('input', function(){ S.pad.vol=+this.value; $('padVolV').textContent=this.value; applyPadVolume(); persist(); });
 document.addEventListener('keydown', function(e){
   if(e.target.tagName==='INPUT' || e.target.tagName==='SELECT') return;
