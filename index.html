@@ -280,7 +280,7 @@ input[type=range]{width:100%;margin:8px 0 2px;accent-color:var(--acc);height:24p
   </div>
 </div>
 
-<script src="guide-voices.js?v=3"></script>
+<script src="guide-voices.js?v=4"></script>
 <script>
 (function(){
 'use strict';
@@ -299,7 +299,7 @@ var songName = '';
 
 var SECTIONS = [['intro','Intro'],['verse','Verse'],['prechorus','Pre-Chorus'],['chorus','Chorus'],['bridge','Bridge'],['tag','Tag'],
   ['buildup','Build-up'],['allin','All-in'],['break','Break'],['drumonly','Drum only'],['voiceonly','Voice only'],
-  ['interlude','Interlude'],['instrumental','Instrumental'],['outro','Outro'],['softchill','Soft chill']];
+  ['interlude','Interlude'],['instrumental','Instrumental'],['outro','Outro'],['count','Count']];
 function secInfo(id){ for(var i=0;i<SECTIONS.length;i++) if(SECTIONS[i][0]===id) return SECTIONS[i]; return SECTIONS[1]; }
 function normGuide(g){ g=g||{}; return { vol:Math.max(0,Math.min(100, g.vol===undefined ? 80 : (+g.vol||0))), count: g.count!==false, countTo: g.countTo==='4' ? '4' : 'bar', countIn: g.countIn!==false }; }
 function normPad(p){
@@ -502,6 +502,32 @@ function callSectionNow(id){
   cueEvents.push({time:t, id:id});
   renderGuideStatus();
 }
+/* Count button: one bar of spoken numbers. With an ear on 1/8 or 1/16 it says "1 and 2 and ..." */
+function countUsesAnd(){
+  if(S.sig==='6/8') return false;                     /* the six counts are already eighths */
+  var sides=[S.left,S.right].filter(function(x){ return !x.mute; });
+  if(!sides.length) sides=[S.left,S.right];
+  return sides.some(function(x){ return x.note!=='q'; });
+}
+function callCount(now){
+  ensureAudio();
+  var len=countLen(), n=beatsPerBar(), withAnd=countUsesAnd(), t, idx=0, cue={id:'count', time:0, srcs:[], now:!!now};
+  if(!running){ t=ctx.currentTime+0.06; }
+  else {
+    if(pendingCue && pendingCue.id==='count'){ cancelCue(); renderGuideStatus(); toast('Cancelled'); return; }
+    cancelCue();
+    if(now){ t=nextBeatTime; idx=beatInBar; while(idx>0 && t-len>=ctx.currentTime+0.03){ t-=len; idx--; } }
+    else t=nextBarTime();
+    cue.time=t; pendingCue=cue; cueEvents.push({time:t, id:'count'});
+  }
+  var push=function(s){ cue.srcs.push(s); };
+  for(var i=idx;i<n;i++){
+    var at=t+(i-idx)*len;
+    sayGuide('n'+(i+1), at, push, withAnd ? len/2 : len);
+    if(withAnd) sayGuide('and', at+len/2, push, len/2);
+  }
+  if(running) renderGuideStatus(); else flashCue('count');
+}
 function flashCue(id){
   var bs=$('addSec').children;
   for(var i=0;i<bs.length;i++){ bs[i].classList.remove('pending'); bs[i].classList.toggle('fired', bs[i].dataset.id===id); }
@@ -548,7 +574,6 @@ function start(){
 }
 function stop(){
   running = false; clearInterval(timerId); queue.length = 0;
-  if(!S.pad.on) releaseWake();
   $('startBtn').textContent='START'; $('startBtn').classList.remove('running');
   var ls=document.querySelectorAll('.light'); for(var i=0;i<ls.length;i++) ls[i].classList.remove('on');
   cancelCue();
@@ -595,7 +620,7 @@ function buildLights(){
 
 /* ---------- wake lock ---------- */
 var wakeLock=null;
-function needAwake(){ return running || S.pad.on; }
+function needAwake(){ return true; }   /* screen stays on the whole time the app is open */
 function keepAwake(){
   if(!('wakeLock' in navigator) || wakeLock) return;
   navigator.wakeLock.request('screen').then(function(w){
@@ -605,6 +630,8 @@ function keepAwake(){
 }
 function releaseWake(){ if(wakeLock){ wakeLock.release().catch(function(){}); wakeLock=null; } }
 setInterval(function(){ if(needAwake() && !wakeLock && document.visibilityState==='visible') keepAwake(); }, 5000);
+keepAwake();
+['pointerdown','touchstart'].forEach(function(n){ document.addEventListener(n, function(){ if(!wakeLock) keepAwake(); }, {passive:true}); });   /* some phones only grant it after a touch */
 document.addEventListener('visibilitychange', function(){
   if(document.visibilityState==='visible' && needAwake()){ if(ctx && ctx.state==='suspended') ctx.resume(); keepAwake(); }
 });
@@ -764,7 +791,7 @@ function stopPad(p){
 }
 function setPadOn(on){
   S.pad.on = on;
-  if(on) startPad(); else { if(pad) stopPad(pad); if(!running) releaseWake(); }
+  if(on) startPad(); else { if(pad) stopPad(pad); }
   renderPad(); persist();
 }
 function applyPadVolume(){ if(padMaster){ var t=ctx.currentTime; padMaster.gain.cancelScheduledValues(t); padMaster.gain.setTargetAtTime(S.pad.vol/100, t, 0.05); } }
@@ -793,8 +820,8 @@ function buildGuide(){
     var b=document.createElement('button'); b.textContent=sc[1]; b.dataset.id=sc[0];
     /* tap = call on the next bar; hold = call now */
     var holdT=null, held=false;
-    b.addEventListener('pointerdown', function(e){ e.preventDefault(); held=false; clearTimeout(holdT); holdT=setTimeout(function(){ held=true; callSectionNow(sc[0]); }, 380); });
-    var up=function(e){ clearTimeout(holdT); if(e.type==='pointerup' && !held) callSection(sc[0]); held=false; };
+    b.addEventListener('pointerdown', function(e){ e.preventDefault(); held=false; clearTimeout(holdT); holdT=setTimeout(function(){ held=true; if(sc[0]==='count') callCount(true); else callSectionNow(sc[0]); }, 380); });
+    var up=function(e){ clearTimeout(holdT); if(e.type==='pointerup' && !held){ if(sc[0]==='count') callCount(false); else callSection(sc[0]); } held=false; };
     b.addEventListener('pointerup', up); b.addEventListener('pointercancel', up); b.addEventListener('pointerleave', function(){ clearTimeout(holdT); });
     b.addEventListener('contextmenu', function(e){ e.preventDefault(); });
     add.appendChild(b);
@@ -822,7 +849,7 @@ function renderGuideStatus(bar){
   var el=$('gStatus'), bs=$('addSec').children;
   for(var i=0;i<bs.length;i++) bs[i].classList.toggle('pending', !!pendingCue && bs[i].dataset.id===pendingCue.id);
   var n = callPositions().length, cnt = S.guide.count ? ' 2…'+n : '';
-  if(pendingCue) el.innerHTML='<b>'+secInfo(pendingCue.id)[1]+(pendingCue.now ? '' : cnt)+'</b> '+(pendingCue.now ? 'now' : 'next bar');
+  if(pendingCue) el.innerHTML='<b>'+secInfo(pendingCue.id)[1]+((pendingCue.now || pendingCue.id==='count') ? '' : cnt)+'</b> '+(pendingCue.now ? 'now' : 'next bar');
   else if(running && guideBarNow===-1) el.innerHTML='<b>count-in</b>';
   else el.textContent = running ? 'tap a name' : 'tap to hear';
 }
