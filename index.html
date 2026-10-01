@@ -53,6 +53,31 @@ h1{font-size:16px;margin:0;white-space:nowrap}
 .sslots button.in{background:var(--acc);color:#000}
 .srow .sdel{width:32px;height:32px;padding:0;font-size:16px;border-radius:8px;color:var(--mut);flex:none}
 .modalEmpty{color:var(--mut);font-size:13px;padding:14px 4px;text-align:center}
+.modalHead{flex-wrap:wrap}
+.mbtns{display:flex;gap:6px}
+.mbtn{height:30px;padding:0 12px;font-size:13px;border-radius:8px;font-weight:600}
+.modal.share{background:rgba(0,0,0,.88);padding:10px;z-index:30}
+.shareBox{background:#fff;color:#000;border-radius:16px;padding:10px;display:flex;flex-direction:column;align-items:center;gap:10px;max-width:100%;max-height:100%}
+#shareQr{display:block;image-rendering:pixelated;flex:none}
+.shareSide{display:flex;flex-direction:column;gap:8px;align-items:stretch;min-width:0}
+.shareInfo{display:flex;flex-direction:column;gap:3px;text-align:center}
+.shareInfo b{font-size:16px} .shareInfo span{font-size:13px;color:#555;min-height:16px} .shareInfo small{font-size:11px;color:#777;line-height:1.3}
+.shareBtns{display:flex;gap:6px;justify-content:center}
+.shareBtns button{height:36px;padding:0 14px;font-size:14px;background:#e9ebf0;color:#000;border-radius:9px}
+.shareBtns button.primary{background:var(--acc);font-weight:700}
+#sharePrev,#shareNext{width:44px;padding:0;font-size:22px}
+.shareBox.one #sharePrev,.shareBox.one #shareNext{display:none}
+.modal.scan{padding:0}
+.scanBox{position:relative;width:100%;height:100%;background:#000;overflow:hidden}
+#scanVideo{width:100%;height:100%;object-fit:cover;display:block}
+.scanFrame{position:absolute;left:50%;top:50%;width:min(60vw,60vh);height:min(60vw,60vh);transform:translate(-50%,-50%);border:3px solid rgba(92,255,138,.9);border-radius:14px;pointer-events:none}
+.scanBar{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;gap:8px;padding:10px 12px;background:rgba(0,0,0,.55)}
+.scanStatus{flex:1;font-size:13px;color:#fff;min-width:0}
+.scanBar button{height:34px;padding:0 12px;font-size:13px;border-radius:9px}
+@media (min-width:640px) and (orientation:landscape){
+  .shareBox{flex-direction:row;align-items:center;gap:14px}
+  .shareSide{width:200px}
+}
 .card{background:var(--card);border-radius:14px;padding:12px}
 button{font:inherit;color:var(--fg);background:var(--btn);border:0;border-radius:10px;padding:0 12px;height:44px;font-size:16px;cursor:pointer;touch-action:manipulation}
 button:active{transform:scale(.97);filter:brightness(1.25)}
@@ -144,7 +169,7 @@ input[type=range]{width:100%;margin:8px 0 2px;accent-color:var(--acc);height:24p
 .del{height:32px;width:32px;padding:0;border-radius:9px;color:var(--mut);font-size:16px}
 .empty{color:var(--mut);font-size:13px;text-align:center;padding:10px 0 2px}
 .hint{color:var(--mut);font-size:11px;text-align:center;line-height:1.5}
-#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:#fff;color:#000;padding:8px 16px;border-radius:20px;font-size:14px;opacity:0;pointer-events:none;transition:.2s;z-index:9}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:#fff;color:#000;padding:8px 16px;border-radius:20px;font-size:14px;opacity:0;pointer-events:none;transition:.2s;z-index:40}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
 /* landscape: everything important on one screen, three columns */
@@ -275,12 +300,31 @@ input[type=range]{width:100%;margin:8px 0 2px;accent-color:var(--acc);height:24p
 <div id="toast"></div>
 <div class="modal" id="songModal" hidden>
   <div class="modalBox">
-    <div class="modalHead"><span class="ttl">Saved songs</span><span class="modalTip">tap a number to put the song in that slot, tap the name to load</span><button class="modalClose" id="modalClose" aria-label="close">&times;</button></div>
+    <div class="modalHead"><span class="ttl">Saved songs</span><span class="mbtns"><button class="mbtn" id="songSend">Send</button><button class="mbtn" id="songRecv">Receive</button></span><span class="modalTip">number = slot, name = load</span><button class="modalClose" id="modalClose" aria-label="close">&times;</button></div>
     <div class="modalBody" id="songRows"></div>
+  </div>
+</div>
+<div class="modal share" id="shareModal" hidden>
+  <div class="shareBox">
+    <canvas id="shareQr" width="10" height="10"></canvas>
+    <div class="shareSide">
+      <div class="shareInfo"><b id="shareTitle">Songs</b><span id="sharePage"></span><small>On the other phone: assign, Receive, point its camera here.</small></div>
+      <div class="shareBtns"><button id="sharePrev" aria-label="previous page">&lsaquo;</button><button id="shareNext" aria-label="next page">&rsaquo;</button></div>
+      <div class="shareBtns"><button id="shareCopy">copy as text</button><button id="shareClose" class="primary">done</button></div>
+    </div>
+  </div>
+</div>
+<div class="modal share scan" id="scanModal" hidden>
+  <div class="scanBox">
+    <video id="scanVideo" playsinline autoplay muted></video>
+    <div class="scanFrame"></div>
+    <div class="scanBar"><span class="scanStatus" id="scanStatus"></span><button id="scanPaste">paste code</button><button id="scanClose">cancel</button></div>
   </div>
 </div>
 
 <script src="guide-voices.js?v=4"></script>
+<script src="qrcode.js"></script>
+<script src="jsQR.js"></script>
 <script>
 (function(){
 'use strict';
@@ -932,6 +976,209 @@ function loadSlot(i){
   if(!sg){ toast('"'+nm+'" was deleted'); return; }
   loadSong(sg);
 }
+/* ---------- share songs between phones by QR code (songs only, slots stay per phone) ---------- */
+var SHARE_TAG='SM1.', SHARE_PAGE_BYTES=320;
+function utf8enc(str){ return Array.prototype.slice.call(new TextEncoder().encode(str)); }
+function utf8dec(bytes){ return new TextDecoder().decode(new Uint8Array(bytes)); }
+function b64enc(bytes){ var bin=''; for(var i=0;i<bytes.length;i++) bin+=String.fromCharCode(bytes[i]); return btoa(bin).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''); }
+function b64dec(str){ var t=str.replace(/-/g,'+').replace(/_/g,'/'); while(t.length%4) t+='='; var bin=atob(t), out=[]; for(var i=0;i<bin.length;i++) out.push(bin.charCodeAt(i)); return out; }
+function noteIx(n){ return n==='s' ? 2 : (n==='e' ? 1 : 0); }
+function soundIx(id){ for(var i=0;i<SOUNDS.length;i++) if(SOUNDS[i].id===id) return i; return 0; }
+function songToBytes(sg){
+  var L=normSide(sg.left,'q'), R=normSide(sg.right,'e'), P=normPad(sg.pad), G=normGuide(sg.guide), A=normAccents(sg.accents);
+  var sig=Math.max(0, SIGS.indexOf(normSig(sg)));
+  var nm=Array.from(String(sg.name||'')), name=utf8enc(nm.join(''));
+  while(name.length>255){ nm.pop(); name=utf8enc(nm.join('')); }   /* whole characters only */
+  var bpm=Math.max(30, Math.min(300, Math.round(+sg.bpm)||120));
+  var b=[name.length].concat(name);
+  b.push(bpm>>8, bpm&255);
+  b.push(sig | (noteIx(L.note)<<2) | (noteIx(R.note)<<4) | (L.mute?64:0) | (R.mute?128:0));
+  b.push(soundIx(L.sound) | (soundIx(R.sound)<<2) | (P.on?16:0) | (G.count?32:0) | (G.countTo==='4'?64:0) | (G.countIn?128:0));
+  b.push(P.key&15);
+  b.push(L.vol&127, R.vol&127, P.vol&127, G.vol&127);
+  var acc=A['3/4'].concat(A['4/4'], A['6/8']), packed=[0,0,0,0];
+  for(var k=0;k<13;k++) packed[k>>2] |= (acc[k]&3) << ((k&3)*2);
+  return b.concat(packed);
+}
+function bytesToSong(b, pos){
+  var need=function(n){ if(pos+n>b.length) throw new Error('short'); };
+  need(1); var nl=b[pos++]; need(nl+13);
+  var name=utf8dec(b.slice(pos,pos+nl)).trim(); pos+=nl;
+  if(!name) throw new Error('name');
+  var bpm=(b[pos]<<8)|b[pos+1]; pos+=2;
+  var f1=b[pos++], f2=b[pos++], key=b[pos++]&15;
+  var vols=b.slice(pos,pos+4); pos+=4;
+  var packed=b.slice(pos,pos+4); pos+=4;
+  var acc=[]; for(var k=0;k<13;k++) acc.push(Math.min(2,(packed[k>>2]>>((k&3)*2))&3));
+  var NT=['q','e','s'];
+  var sg={ name:name, bpm:Math.max(30,Math.min(300,bpm)), sig:SIGS[f1&3]||'4/4', accV:2,
+    accents:{ '3/4':acc.slice(0,3), '4/4':acc.slice(3,7), '6/8':acc.slice(7,13) },
+    left:{ note:NT[(f1>>2)&3]||'q', mute:!!(f1&64), sound:(SOUNDS[f2&3]||SOUNDS[0]).id, vol:Math.min(100,vols[0]) },
+    right:{ note:NT[(f1>>4)&3]||'e', mute:!!(f1&128), sound:(SOUNDS[(f2>>2)&3]||SOUNDS[0]).id, vol:Math.min(100,vols[1]) },
+    pad:{ on:!!(f2&16), key:Math.min(11,key), mode:'major', vol:Math.min(100,vols[2]) },
+    guide:{ vol:Math.min(100,vols[3]), count:!!(f2&32), countTo:(f2&64)?'4':'bar', countIn:!!(f2&128) } };
+  sg.left=normSide(sg.left,'q'); sg.right=normSide(sg.right,'e'); sg.pad=normPad(sg.pad); sg.guide=normGuide(sg.guide); sg.accents=normAccents(sg.accents);
+  return {song:sg, pos:pos};
+}
+/* pages: [{text, count}] ; every page is self-contained so they can be scanned in any order */
+function encodePages(list, maxBytes){
+  var chunks=list.map(songToBytes), pages=[], cur=[], curLen=0, curCount=0;
+  var flush=function(){ if(curCount){ pages.push({bytes:cur, count:curCount}); cur=[]; curLen=0; curCount=0; } };
+  chunks.forEach(function(c){ if(curCount && curLen+c.length>maxBytes) flush(); cur=cur.concat(c); curLen+=c.length; curCount++; });
+  flush();
+  if(!pages.length) pages.push({bytes:[], count:0});
+  return pages.map(function(pg, i){ return { text: SHARE_TAG+b64enc([i+1, pages.length].concat(pg.bytes)), count:pg.count }; });
+}
+function decodePage(text){
+  text=String(text||'').trim();
+  if(text.indexOf(SHARE_TAG)!==0) return null;
+  var b=b64dec(text.slice(SHARE_TAG.length));
+  if(b.length<2) throw new Error('short');
+  var idx=b[0], total=b[1], pos=2, songs=[];
+  if(!idx || !total || idx>total) throw new Error('page');
+  while(pos<b.length){ var r=bytesToSong(b,pos); songs.push(r.song); pos=r.pos; }
+  return {idx:idx, total:total, songs:songs};
+}
+function mergeSongs(incoming){
+  var list=loadSongs(), byName={}, seen={}, add=0, upd=0;
+  list.forEach(function(sg,i){ byName[sg.name.toLowerCase()]=i; });
+  incoming.forEach(function(sg){
+    var k=sg.name.toLowerCase(); if(seen[k]) return; seen[k]=true;
+    if(byName[k]!==undefined){ list[byName[k]]=Object.assign({}, sg, {name:list[byName[k]].name}); upd++; }
+    else { list.push(sg); byName[k]=list.length-1; add++; }
+  });
+  return {list:list, add:add, upd:upd};
+}
+function importSongs(incoming){
+  if(!incoming.length){ toast('No songs in that code'); return false; }
+  var m=mergeSongs(incoming);
+  var msg='Import '+incoming.length+' song'+(incoming.length===1?'':'s')+'?'+(m.upd ? ' ('+m.upd+' will replace songs with the same name)' : '');
+  if(!confirm(msg)) return false;
+  storeSongs(m.list); renderSongs(); renderSongModal();
+  toast((m.add+m.upd)+' songs imported'); return true;
+}
+
+/* ---- Send: show the pages as QR codes ---- */
+var share={pages:[], i:0, timer:null};
+function drawQr(canvas, text, cssPx){
+  var dpr=window.devicePixelRatio||1, qr=window.qrcode(0,'L'); qr.addData(text,'Byte'); qr.make();
+  var n=qr.getModuleCount(), quiet=4, cell=Math.max(1, Math.floor(cssPx*dpr/(n+quiet*2))), size=cell*(n+quiet*2);
+  canvas.width=size; canvas.height=size; canvas.style.width=canvas.style.height=Math.round(size/dpr)+'px';
+  var c=canvas.getContext('2d'); c.fillStyle='#fff'; c.fillRect(0,0,size,size); c.fillStyle='#000';
+  for(var r=0;r<n;r++) for(var col=0;col<n;col++) if(qr.isDark(r,col)) c.fillRect((col+quiet)*cell,(r+quiet)*cell,cell,cell);
+  return n;
+}
+function openShare(){
+  var list=loadSongs(); if(!list.length){ toast('No saved songs to send'); return; }
+  share.pages=encodePages(list, SHARE_PAGE_BYTES); share.i=0;
+  $('shareModal').hidden=false; $('shareTitle').textContent=list.length+' song'+(list.length===1?'':'s');
+  $('shareQr').parentNode.classList.toggle('one', share.pages.length===1);
+  renderShare();
+  clearInterval(share.timer);
+  if(share.pages.length>1) share.timer=setInterval(function(){ share.i=(share.i+1)%share.pages.length; renderShare(); }, 2500);
+}
+function renderShare(){
+  var land=innerWidth>innerHeight && innerWidth>=640;
+  var px=land ? innerHeight-60 : Math.min(innerWidth-60, innerHeight-230);
+  drawQr($('shareQr'), share.pages[share.i].text, Math.max(120, px));
+  $('sharePage').textContent = share.pages.length>1 ? 'code '+(share.i+1)+' of '+share.pages.length+'  (keeps turning)' : '';
+}
+function closeShare(){ clearInterval(share.timer); $('shareModal').hidden=true; }
+function shareText(){ return encodePages(loadSongs(), 1e9)[0].text; }
+function copyShare(){
+  var t=shareText();
+  var done=function(){ toast('Code copied. Paste it on the other phone.'); };
+  if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(done, function(){ prompt('Copy this code', t); });
+  else prompt('Copy this code', t);
+}
+
+/* ---- Receive: camera scanner, with paste as the fallback ---- */
+var scan={stream:null, raf:0, pages:{}, total:0, detector:null, busy:false, last:0, canvas:null};
+function scanStatus(msg){ $('scanStatus').textContent=msg; }
+function openScan(){
+  $('scanModal').hidden=false; scan.pages={}; scan.total=0; scan.detector=null; scan.busy=false;
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){ scanStatus('No camera here. Use "paste code".'); return; }
+  scanStatus('starting camera…');
+  navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}, width:{ideal:1280}, height:{ideal:720}}, audio:false}).then(function(st){
+    if($('scanModal').hidden){ st.getTracks().forEach(function(t){ t.stop(); }); return; }
+    scan.stream=st; var v=$('scanVideo'); v.srcObject=st; v.play().catch(function(){});
+    if(window.BarcodeDetector){ try{ scan.detector=new BarcodeDetector({formats:['qr_code']}); }catch(e){ scan.detector=null; } }
+    scanStatus("point at the other phone's code");
+    cancelAnimationFrame(scan.raf); scan.raf=requestAnimationFrame(scanTick);
+  }, function(e){ scanStatus('Camera not available ('+(e && e.name || 'blocked')+'). Allow the camera in the phone settings, or use "paste code".'); });
+}
+function scanTick(){
+  if($('scanModal').hidden) return;
+  scan.raf=requestAnimationFrame(scanTick);
+  var v=$('scanVideo'); if(v.readyState<2 || !v.videoWidth || scan.busy) return;
+  var now=performance.now(); if(now-scan.last<120) return; scan.last=now;
+  if(scan.detector){
+    scan.busy=true;
+    scan.detector.detect(v).then(function(codes){
+      scan.busy=false; if($('scanModal').hidden) return;
+      if(codes.length){ codes.forEach(function(c){ gotCode(c.rawValue); }); return; }
+      jsqrFrame(v);   /* Android Chrome answers [] (never rejects) while its barcode module is missing, so try jsQR on the same frame */
+    }, function(){ scan.busy=false; scan.detector=null; });
+    return;
+  }
+  jsqrFrame(v);
+}
+function jsqrFrame(v){
+  if(!window.jsQR) return;
+  var k=Math.min(1, 800/Math.max(v.videoWidth, v.videoHeight));   /* keep the long side at 800 px, portrait or landscape */
+  var cw=Math.round(v.videoWidth*k), ch=Math.round(v.videoHeight*k);
+  var cv=scan.canvas || (scan.canvas=document.createElement('canvas'));
+  if(cv.width!==cw || cv.height!==ch){ cv.width=cw; cv.height=ch; }
+  var c=cv.getContext('2d', {willReadFrequently:true}); c.drawImage(v,0,0,cw,ch);
+  var img=c.getImageData(0,0,cw,ch);
+  var r=window.jsQR(img.data, cw, ch, {inversionAttempts:'dontInvert'});
+  if(r && r.data) gotCode(r.data);
+}
+function gotCode(text){
+  var pg;
+  try{ pg=decodePage(text); }catch(e){ scanStatus('That code is damaged, try again'); return; }
+  if(!pg){ scanStatus('That is not a Split Metronome code'); return; }
+  if(scan.pages[pg.idx]) return;
+  scan.pages[pg.idx]=pg.songs; scan.total=pg.total;
+  if(navigator.vibrate) navigator.vibrate(40);
+  var have=Object.keys(scan.pages).length;
+  if(have<pg.total){ scanStatus('got code '+have+' of '+pg.total+', keep pointing'); return; }
+  finishScan();
+}
+function finishScan(){
+  var all=[]; for(var i=1;i<=scan.total;i++) all=all.concat(scan.pages[i]||[]);
+  stopScan(); closeScan();
+  importSongs(all);
+}
+function pasteCode(){
+  var t=prompt('Paste the code from the other phone'); if(!t) return;
+  var parts=t.split(/\s+/).filter(Boolean), pages={}, total=0, bad=false;
+  parts.forEach(function(x){ try{ var pg=decodePage(x); if(pg){ pages[pg.idx]=pg.songs; total=pg.total; } else bad=true; }catch(e){ bad=true; } });
+  var have=Object.keys(pages).length;
+  if(!have){ scanStatus(bad ? 'That is not a Split Metronome code' : 'Nothing to import'); return; }
+  if(have<total){ scanStatus('Only '+have+' of '+total+' codes pasted, paste the rest too'); return; }
+  var all=[]; for(var i=1;i<=total;i++) all=all.concat(pages[i]||[]);
+  stopScan(); closeScan(); importSongs(all);
+}
+function stopScan(){
+  cancelAnimationFrame(scan.raf); scan.raf=0;
+  if(scan.stream){ scan.stream.getTracks().forEach(function(t){ t.stop(); }); scan.stream=null; }
+  var v=$('scanVideo'); try{ v.pause(); }catch(e){} v.srcObject=null;
+}
+function closeScan(){ stopScan(); $('scanModal').hidden=true; }
+function buildShare(){
+  $('songSend').addEventListener('click', openShare);
+  $('songRecv').addEventListener('click', openScan);
+  $('shareClose').addEventListener('click', closeShare);
+  $('shareCopy').addEventListener('click', copyShare);
+  $('sharePrev').addEventListener('click', function(){ share.i=(share.i-1+share.pages.length)%share.pages.length; renderShare(); });
+  $('shareNext').addEventListener('click', function(){ share.i=(share.i+1)%share.pages.length; renderShare(); });
+  $('scanClose').addEventListener('click', closeScan);
+  $('scanPaste').addEventListener('click', pasteCode);
+  window.addEventListener('resize', function(){ if(!$('shareModal').hidden) renderShare(); });
+  document.addEventListener('visibilitychange', function(){ if(document.visibilityState!=='visible' && !$('scanModal').hidden) closeScan(); });
+}
+
 function openSongModal(){ renderSongModal(); $('songModal').hidden=false; }
 function closeSongModal(){ $('songModal').hidden=true; }
 function renderSongModal(){
@@ -1007,7 +1254,7 @@ function toast(msg){ var t=$('toast'); t.textContent=msg; t.classList.add('show'
 /* ---------- wire up ---------- */
 restore();
 dots.left=$('dotL'); dots.right=$('dotR');
-buildSubs('left'); buildSubs('right'); buildSounds('left'); buildSounds('right'); buildSig(); buildKeys(); buildGuide(); buildSlots();
+buildSubs('left'); buildSubs('right'); buildSounds('left'); buildSounds('right'); buildSig(); buildKeys(); buildGuide(); buildSlots(); buildShare();
 renderAll();
 
 holdRepeat($('bpmUp'), function(){ setBpm(S.bpm+1); });
@@ -1022,7 +1269,7 @@ $('tapBtn').addEventListener('pointerdown', function(e){ e.preventDefault(); tap
 $('startBtn').addEventListener('click', function(){ running ? stop() : start(); });
 $('saveBtn').addEventListener('click', saveSong);
 $('nameIn').addEventListener('keydown', function(e){ if(e.key==='Enter'){ saveSong(); this.blur(); } });
-$('hdSave').addEventListener('click', function(){ var n=prompt('Song name', songName||''); if(n && n.trim()){ $('nameIn').value=n.trim(); saveSong(); } });
+$('hdSave').addEventListener('click', function(){ var n=prompt('Song name', songName||''); if(n && n.trim()){ $('nameIn').value=Array.from(n.trim()).slice(0,40).join(''); saveSong(); } });
 $('hdDel').addEventListener('click', function(){ if(songName) deleteSong(songName); else toast('No song loaded'); });
 $('padVol').addEventListener('input', function(){ S.pad.vol=+this.value; $('padVolV').textContent=this.value; applyPadVolume(); persist(); });
 document.addEventListener('keydown', function(e){
