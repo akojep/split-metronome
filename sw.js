@@ -1,4 +1,4 @@
-var CACHE = 'splitmetro-v52';
+var CACHE = 'splitmetro-v53';
 var FILES = ['./', './index.html', './manifest.json', './guide-voices.js?v=4', './icon-180.png', './icon-192.png', './icon-512.png'];
 self.addEventListener('install', function(e){
   e.waitUntil(caches.open(CACHE).then(function(c){ return c.addAll(FILES.map(function(f){ return new Request(f, {cache:'reload'}); })); }).then(function(){ return self.skipWaiting(); }));

@@ -346,7 +346,7 @@ function normSide(x, def){
 function normSig(sg){ if(sg.sig) return sg.sig; var b=sg.beatsPerBar; return b===3 ? '3/4' : (b===6 ? '6/8' : '4/4'); }
 
 /* ---------- audio ---------- */
-var ctx=null, gainL, gainR;
+var ctx=null, gainL, gainR, outMerger;
 var running=false, nextBeatTime=0, beatInBar=0, barIndex=0, timerId=null;
 var LOOKAHEAD=0.15, INTERVAL=25;
 var queue=[];
@@ -356,11 +356,11 @@ function ensureAudio(){
   if(!ctx){
     var AC = window.AudioContext || window.webkitAudioContext;
     ctx = new AC({latencyHint:'interactive'});
-    var merger = ctx.createChannelMerger(2);
-    merger.connect(ctx.destination);
+    outMerger = ctx.createChannelMerger(2);
+    outMerger.connect(ctx.destination);
     gainL = ctx.createGain(); gainR = ctx.createGain();
-    gainL.connect(merger,0,0);   /* hard left */
-    gainR.connect(merger,0,1);   /* hard right */
+    gainL.connect(outMerger,0,0);   /* hard left */
+    gainR.connect(outMerger,0,1);   /* hard right */
     applyVolumes();
     ensureGuide();
   }
@@ -426,10 +426,13 @@ function preview(side){
 }
 
 /* ---------- guide voice ---------- */
-var guideGain=null, guideBuf={}, guideLoad={};
+var guideGain=null, guideSide={left:null, right:null}, guideBuf={}, guideLoad={};
 function ensureGuide(){
   if(guideGain) return;
   guideGain = ctx.createGain(); guideGain.gain.value = S.guide.vol/100; guideGain.connect(ctx.destination);
+  ['left','right'].forEach(function(side, ch){   /* per-ear voice, used by the Count call */
+    var g = ctx.createGain(); g.gain.value = S.guide.vol/100; g.connect(outMerger, 0, ch); guideSide[side] = g;
+  });
   var v = window.GUIDE_VOICES || {};
   Object.keys(v).forEach(function(k){
     var bin = atob(v[k].split(',')[1]), arr = new Uint8Array(bin.length);
@@ -442,23 +445,24 @@ function ensureGuide(){
 var pendingCue=null;   /* {id, time, srcs:[]} waiting for the next bar */
 var cueEvents=[];      /* visual events for calls, kept apart from the beat queue so lights never wait behind a call */
 /* maxDur: cut the clip (with a short fade) so fast counts do not overlap */
-function playBuf(b, time, maxDur){
+function playBuf(b, time, maxDur, dest){
+  dest = dest || guideGain;
   var s = ctx.createBufferSource(); s.buffer=b;
   var cut = maxDur && b.duration > maxDur;
   if(cut){
     var g = ctx.createGain(); var fade = Math.min(0.03, maxDur*0.4);
     g.gain.setValueAtTime(1, time); g.gain.setValueAtTime(1, time+maxDur-fade); g.gain.linearRampToValueAtTime(0, time+maxDur);
-    s.connect(g); g.connect(guideGain);
-  } else s.connect(guideGain);
+    s.connect(g); g.connect(dest);
+  } else s.connect(dest);
   s.start(time);
   if(cut) s.stop(time+maxDur+0.01);   /* stop must come after start */
   return s;
 }
-function sayGuide(id, time, onSrc, maxDur){
+function sayGuide(id, time, onSrc, maxDur, dest){
   if(!guideGain) return;
-  if(guideBuf[id]){ var s=playBuf(guideBuf[id], time, maxDur); if(onSrc) onSrc(s); return; }
+  if(guideBuf[id]){ var s=playBuf(guideBuf[id], time, maxDur, dest); if(onSrc) onSrc(s); return; }
   var p = guideLoad[id]; if(!p) return;
-  p.then(function(b){ if(b && time > ctx.currentTime - 0.05){ var s=playBuf(b, Math.max(time, ctx.currentTime), maxDur); if(onSrc) onSrc(s); } });
+  p.then(function(b){ if(b && time > ctx.currentTime - 0.05){ var s=playBuf(b, Math.max(time, ctx.currentTime), maxDur, dest); if(onSrc) onSrc(s); } });
 }
 /* time of the next beat 1 that has not played yet */
 function nextBarTime(){
@@ -502,16 +506,17 @@ function callSectionNow(id){
   cueEvents.push({time:t, id:id});
   renderGuideStatus();
 }
-/* Count button: one bar of spoken numbers. With an ear on 1/8 or 1/16 it says "1 and 2 and ..." */
-function countUsesAnd(){
+/* Count button: one bar of spoken numbers, split per ear. An ear on 1/4 hears "1 2 3 4";
+   an ear on 1/8 or 1/16 hears "1 and 2 and ...". Both ears count at the same time. */
+function sideUsesAnd(side){
   if(S.sig==='6/8') return false;                     /* the six counts are already eighths */
-  var sides=[S.left,S.right].filter(function(x){ return !x.mute; });
-  if(!sides.length) sides=[S.left,S.right];
-  return sides.some(function(x){ return x.note!=='q'; });
+  var s=S[side], o=S[side==='left'?'right':'left'];
+  if(s.mute && !o.mute) s=o;                          /* a muted ear follows the ear that is still clicking */
+  return s.note!=='q';
 }
 function callCount(now){
   ensureAudio();
-  var len=countLen(), n=beatsPerBar(), withAnd=countUsesAnd(), t, idx=0, cue={id:'count', time:0, srcs:[], now:!!now};
+  var len=countLen(), n=beatsPerBar(), t, idx=0, cue={id:'count', time:0, srcs:[], now:!!now};
   if(!running){ t=ctx.currentTime+0.06; }
   else {
     if(pendingCue && pendingCue.id==='count'){ cancelCue(); renderGuideStatus(); toast('Cancelled'); return; }
@@ -521,11 +526,14 @@ function callCount(now){
     cue.time=t; pendingCue=cue; cueEvents.push({time:t, id:'count'});
   }
   var push=function(s){ cue.srcs.push(s); };
-  for(var i=idx;i<n;i++){
-    var at=t+(i-idx)*len;
-    sayGuide('n'+(i+1), at, push, withAnd ? len/2 : len);
-    if(withAnd) sayGuide('and', at+len/2, push, len/2);
-  }
+  ['left','right'].forEach(function(side){
+    var withAnd=sideUsesAnd(side), dest=guideSide[side];
+    for(var i=idx;i<n;i++){
+      var at=t+(i-idx)*len;
+      sayGuide('n'+(i+1), at, push, withAnd ? len/2 : len, dest);
+      if(withAnd) sayGuide('and', at+len/2, push, len/2, dest);
+    }
+  });
   if(running) renderGuideStatus(); else flashCue('count');
 }
 function flashCue(id){
@@ -533,7 +541,11 @@ function flashCue(id){
   for(var i=0;i<bs.length;i++){ bs[i].classList.remove('pending'); bs[i].classList.toggle('fired', bs[i].dataset.id===id); }
   clearTimeout(flashCue.t); flashCue.t=setTimeout(function(){ for(var i=0;i<bs.length;i++) bs[i].classList.remove('fired'); }, 600);
 }
-function applyGuideVolume(){ if(guideGain){ var t=ctx.currentTime; guideGain.gain.cancelScheduledValues(t); guideGain.gain.setTargetAtTime(S.guide.vol/100, t, 0.03); } }
+function applyGuideVolume(){
+  if(!guideGain) return;
+  var t=ctx.currentTime;
+  [guideGain, guideSide.left, guideSide.right].forEach(function(g){ if(g){ g.gain.cancelScheduledValues(t); g.gain.setTargetAtTime(S.guide.vol/100, t, 0.03); } });
+}
 
 /* ---------- scheduler ---------- */
 function scheduleBeat(t, beat, bar){
