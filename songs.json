@@ -1,0 +1,1281 @@
+{
+ "v": 1,
+ "updated": "2026-10-14T10:42:40.322Z",
+ "songs": [
+  {
+   "name": "One Way",
+   "bpm": 138,
+   "sig": "4/4",
+   "accents": {
+    "3/4": [
+     2,
+     1,
+     1
+    ],
+    "4/4": [
+     2,
+     1,
+     2,
+     1
+    ],
+    "6/8": [
+     2,
+     1,
+     1,
+     1,
+     1,
+     1
+    ]
+   },
+   "left": {
+    "vol": 80,
+    "mute": false,
+    "sound": "beep",
+    "note": "q"
+   },
+   "right": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "e"
+   },
+   "pad": {
+    "on": false,
+    "key": 0,
+    "mode": "major",
+    "vol": 19
+   },
+   "guide": {
+    "vol": 51,
+    "count": true,
+    "countTo": "4",
+    "countIn": true
+   },
+   "accV": 2
+  },
+  {
+   "name": "Believe",
+   "bpm": 71,
+   "sig": "4/4",
+   "accents": {
+    "3/4": [
+     2,
+     1,
+     1
+    ],
+    "4/4": [
+     2,
+     1,
+     2,
+     1
+    ],
+    "6/8": [
+     2,
+     1,
+     1,
+     1,
+     1,
+     1
+    ]
+   },
+   "left": {
+    "vol": 80,
+    "mute": false,
+    "sound": "beep",
+    "note": "q"
+   },
+   "right": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "e"
+   },
+   "pad": {
+    "on": false,
+    "key": 0,
+    "mode": "major",
+    "vol": 19
+   },
+   "guide": {
+    "vol": 51,
+    "count": true,
+    "countTo": "4",
+    "countIn": true
+   },
+   "accV": 2
+  },
+  {
+   "name": "Savior King",
+   "bpm": 71,
+   "sig": "4/4",
+   "accents": {
+    "3/4": [
+     2,
+     1,
+     1
+    ],
+    "4/4": [
+     2,
+     1,
+     2,
+     1
+    ],
+    "6/8": [
+     2,
+     1,
+     1,
+     1,
+     1,
+     1
+    ]
+   },
+   "left": {
+    "vol": 80,
+    "mute": false,
+    "sound": "beep",
+    "note": "q"
+   },
+   "right": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "e"
+   },
+   "pad": {
+    "on": false,
+    "key": 0,
+    "mode": "major",
+    "vol": 19
+   },
+   "guide": {
+    "vol": 51,
+    "count": true,
+    "countTo": "4",
+    "countIn": true
+   },
+   "accV": 2
+  },
+  {
+   "name": "No Other Name - Hillsong",
+   "bpm": 71,
+   "sig": "4/4",
+   "accents": {
+    "3/4": [
+     2,
+     1,
+     1
+    ],
+    "4/4": [
+     2,
+     1,
+     2,
+     1
+    ],
+    "6/8": [
+     2,
+     1,
+     1,
+     1,
+     1,
+     1
+    ]
+   },
+   "left": {
+    "vol": 80,
+    "mute": false,
+    "sound": "beep",
+    "note": "q"
+   },
+   "right": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "e"
+   },
+   "pad": {
+    "on": false,
+    "key": 0,
+    "mode": "major",
+    "vol": 19
+   },
+   "guide": {
+    "vol": 51,
+    "count": true,
+    "countTo": "4",
+    "countIn": true
+   },
+   "accV": 2
+  },
+  {
+   "name": "Kapahingahan",
+   "bpm": 70,
+   "sig": "4/4",
+   "accents": {
+    "3/4": [
+     2,
+     1,
+     1
+    ],
+    "4/4": [
+     2,
+     1,
+     2,
+     1
+    ],
+    "6/8": [
+     2,
+     1,
+     1,
+     1,
+     1,
+     1
+    ]
+   },
+   "left": {
+    "vol": 80,
+    "mute": false,
+    "sound": "beep",
+    "note": "q"
+   },
+   "right": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "e"
+   },
+   "pad": {
+    "on": false,
+    "key": 0,
+    "mode": "major",
+    "vol": 19
+   },
+   "guide": {
+    "vol": 51,
+    "count": true,
+    "countTo": "4",
+    "countIn": true
+   },
+   "accV": 2
+  },
+  {
+   "name": "House of the Lord",
+   "bpm": 90,
+   "sig": "4/4",
+   "accents": {
+    "3/4": [
+     2,
+     1,
+     1
+    ],
+    "4/4": [
+     2,
+     1,
+     2,
+     1
+    ],
+    "6/8": [
+     2,
+     1,
+     1,
+     1,
+     1,
+     1
+    ]
+   },
+   "left": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "q"
+   },
+   "right": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "e"
+   },
+   "pad": {
+    "on": true,
+    "key": 0,
+    "mode": "major",
+    "vol": 14
+   },
+   "guide": {
+    "vol": 24,
+    "count": true,
+    "countTo": "bar",
+    "countIn": true
+   },
+   "accV": 2
+  },
+  {
+   "name": "Shout to the Lord",
+   "bpm": 68,
+   "sig": "4/4",
+   "accents": {
+    "3/4": [
+     2,
+     1,
+     1
+    ],
+    "4/4": [
+     2,
+     1,
+     2,
+     1
+    ],
+    "6/8": [
+     2,
+     1,
+     1,
+     1,
+     1,
+     1
+    ]
+   },
+   "left": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "q"
+   },
+   "right": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "e"
+   },
+   "pad": {
+    "on": true,
+    "key": 4,
+    "mode": "major",
+    "vol": 14
+   },
+   "guide": {
+    "vol": 76,
+    "count": true,
+    "countTo": "bar",
+    "countIn": true
+   },
+   "accV": 2
+  },
+  {
+   "name": "Lord I offer You my life",
+   "bpm": 68,
+   "sig": "4/4",
+   "accents": {
+    "3/4": [
+     2,
+     1,
+     1
+    ],
+    "4/4": [
+     2,
+     1,
+     2,
+     1
+    ],
+    "6/8": [
+     2,
+     1,
+     1,
+     1,
+     1,
+     1
+    ]
+   },
+   "left": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "q"
+   },
+   "right": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "e"
+   },
+   "pad": {
+    "on": true,
+    "key": 0,
+    "mode": "major",
+    "vol": 14
+   },
+   "guide": {
+    "vol": 76,
+    "count": true,
+    "countTo": "bar",
+    "countIn": true
+   },
+   "accV": 2
+  },
+  {
+   "name": "What a Beautiful Name",
+   "bpm": 72,
+   "sig": "4/4",
+   "accents": {
+    "3/4": [
+     2,
+     1,
+     1
+    ],
+    "4/4": [
+     2,
+     1,
+     2,
+     1
+    ],
+    "6/8": [
+     2,
+     1,
+     1,
+     1,
+     1,
+     1
+    ]
+   },
+   "left": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "q"
+   },
+   "right": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "e"
+   },
+   "pad": {
+    "on": true,
+    "key": 0,
+    "mode": "major",
+    "vol": 14
+   },
+   "guide": {
+    "vol": 76,
+    "count": true,
+    "countTo": "bar",
+    "countIn": true
+   },
+   "accV": 2
+  },
+  {
+   "name": "King of Kings",
+   "bpm": 72,
+   "sig": "4/4",
+   "accents": {
+    "3/4": [
+     2,
+     1,
+     1
+    ],
+    "4/4": [
+     2,
+     1,
+     2,
+     1
+    ],
+    "6/8": [
+     2,
+     1,
+     1,
+     1,
+     1,
+     1
+    ]
+   },
+   "left": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "q"
+   },
+   "right": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "e"
+   },
+   "pad": {
+    "on": true,
+    "key": 2,
+    "mode": "major",
+    "vol": 14
+   },
+   "guide": {
+    "vol": 76,
+    "count": true,
+    "countTo": "bar",
+    "countIn": true
+   },
+   "accV": 2
+  },
+  {
+   "name": "Your Presence is Heaven",
+   "bpm": 72,
+   "sig": "4/4",
+   "accents": {
+    "3/4": [
+     2,
+     1,
+     1
+    ],
+    "4/4": [
+     2,
+     1,
+     2,
+     1
+    ],
+    "6/8": [
+     2,
+     1,
+     1,
+     1,
+     1,
+     1
+    ]
+   },
+   "left": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "q"
+   },
+   "right": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "e"
+   },
+   "pad": {
+    "on": true,
+    "key": 0,
+    "mode": "major",
+    "vol": 14
+   },
+   "guide": {
+    "vol": 23,
+    "count": true,
+    "countTo": "bar",
+    "countIn": true
+   },
+   "accV": 2
+  },
+  {
+   "name": "Holy Forever",
+   "bpm": 72,
+   "sig": "4/4",
+   "accents": {
+    "3/4": [
+     2,
+     1,
+     1
+    ],
+    "4/4": [
+     2,
+     1,
+     2,
+     1
+    ],
+    "6/8": [
+     2,
+     1,
+     1,
+     1,
+     1,
+     1
+    ]
+   },
+   "left": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "q"
+   },
+   "right": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "e"
+   },
+   "pad": {
+    "on": true,
+    "key": 4,
+    "mode": "major",
+    "vol": 14
+   },
+   "guide": {
+    "vol": 23,
+    "count": true,
+    "countTo": "bar",
+    "countIn": true
+   },
+   "accV": 2
+  },
+  {
+   "name": "Mighty to Save",
+   "bpm": 75,
+   "sig": "4/4",
+   "accents": {
+    "3/4": [
+     2,
+     1,
+     1
+    ],
+    "4/4": [
+     2,
+     1,
+     2,
+     1
+    ],
+    "6/8": [
+     2,
+     1,
+     1,
+     1,
+     1,
+     1
+    ]
+   },
+   "left": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "q"
+   },
+   "right": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "e"
+   },
+   "pad": {
+    "on": true,
+    "key": 2,
+    "mode": "major",
+    "vol": 14
+   },
+   "guide": {
+    "vol": 23,
+    "count": true,
+    "countTo": "bar",
+    "countIn": true
+   },
+   "accV": 2
+  },
+  {
+   "name": "Amazing Grace (My Chains are Gone)",
+   "bpm": 66,
+   "sig": "4/4",
+   "accents": {
+    "3/4": [
+     2,
+     1,
+     1
+    ],
+    "4/4": [
+     2,
+     1,
+     2,
+     1
+    ],
+    "6/8": [
+     2,
+     1,
+     1,
+     1,
+     1,
+     1
+    ]
+   },
+   "left": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "q"
+   },
+   "right": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "e"
+   },
+   "pad": {
+    "on": true,
+    "key": 11,
+    "mode": "major",
+    "vol": 14
+   },
+   "guide": {
+    "vol": 24,
+    "count": true,
+    "countTo": "bar",
+    "countIn": true
+   },
+   "accV": 2
+  },
+  {
+   "name": "Bahagi ng Pagkakaloob",
+   "bpm": 132,
+   "sig": "4/4",
+   "accents": {
+    "3/4": [
+     2,
+     1,
+     1
+    ],
+    "4/4": [
+     2,
+     1,
+     2,
+     1
+    ],
+    "6/8": [
+     2,
+     1,
+     1,
+     1,
+     1,
+     1
+    ]
+   },
+   "left": {
+    "vol": 80,
+    "mute": false,
+    "sound": "beep",
+    "note": "q"
+   },
+   "right": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "e"
+   },
+   "pad": {
+    "on": false,
+    "key": 0,
+    "mode": "major",
+    "vol": 19
+   },
+   "guide": {
+    "vol": 30,
+    "count": true,
+    "countTo": "4",
+    "countIn": true
+   },
+   "accV": 2
+  },
+  {
+   "name": "Friend of God",
+   "bpm": 125,
+   "sig": "4/4",
+   "accents": {
+    "3/4": [
+     2,
+     1,
+     1
+    ],
+    "4/4": [
+     2,
+     1,
+     2,
+     1
+    ],
+    "6/8": [
+     2,
+     1,
+     1,
+     1,
+     1,
+     1
+    ]
+   },
+   "left": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "q"
+   },
+   "right": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "e"
+   },
+   "pad": {
+    "on": true,
+    "key": 7,
+    "mode": "major",
+    "vol": 14
+   },
+   "guide": {
+    "vol": 23,
+    "count": true,
+    "countTo": "bar",
+    "countIn": true
+   },
+   "accV": 2
+  },
+  {
+   "name": "O Come to the Altar",
+   "bpm": 70,
+   "sig": "6/8",
+   "accents": {
+    "3/4": [
+     2,
+     1,
+     1
+    ],
+    "4/4": [
+     2,
+     1,
+     2,
+     1
+    ],
+    "6/8": [
+     2,
+     1,
+     1,
+     2,
+     1,
+     1
+    ]
+   },
+   "left": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "e"
+   },
+   "right": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "e"
+   },
+   "pad": {
+    "on": true,
+    "key": 0,
+    "mode": "major",
+    "vol": 14
+   },
+   "guide": {
+    "vol": 23,
+    "count": true,
+    "countTo": "bar",
+    "countIn": true
+   },
+   "accV": 2
+  },
+  {
+   "name": "With All I am",
+   "bpm": 70,
+   "sig": "4/4",
+   "accents": {
+    "3/4": [
+     2,
+     1,
+     1
+    ],
+    "4/4": [
+     2,
+     1,
+     2,
+     1
+    ],
+    "6/8": [
+     2,
+     1,
+     1,
+     2,
+     1,
+     1
+    ]
+   },
+   "left": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "q"
+   },
+   "right": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "e"
+   },
+   "pad": {
+    "on": true,
+    "key": 0,
+    "mode": "major",
+    "vol": 14
+   },
+   "guide": {
+    "vol": 23,
+    "count": true,
+    "countTo": "bar",
+    "countIn": true
+   },
+   "accV": 2
+  },
+  {
+   "name": "Lilim",
+   "bpm": 64,
+   "sig": "6/8",
+   "accents": {
+    "3/4": [
+     2,
+     1,
+     1
+    ],
+    "4/4": [
+     2,
+     1,
+     2,
+     1
+    ],
+    "6/8": [
+     2,
+     1,
+     1,
+     2,
+     1,
+     1
+    ]
+   },
+   "left": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "e"
+   },
+   "right": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "e"
+   },
+   "pad": {
+    "on": true,
+    "key": 2,
+    "mode": "major",
+    "vol": 14
+   },
+   "guide": {
+    "vol": 23,
+    "count": true,
+    "countTo": "bar",
+    "countIn": true
+   },
+   "accV": 2
+  },
+  {
+   "name": "10,000 Reasons",
+   "bpm": 70,
+   "sig": "4/4",
+   "accents": {
+    "3/4": [
+     2,
+     1,
+     1
+    ],
+    "4/4": [
+     2,
+     1,
+     2,
+     1
+    ],
+    "6/8": [
+     2,
+     1,
+     1,
+     2,
+     1,
+     1
+    ]
+   },
+   "left": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "q"
+   },
+   "right": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "e"
+   },
+   "pad": {
+    "on": true,
+    "key": 0,
+    "mode": "major",
+    "vol": 14
+   },
+   "guide": {
+    "vol": 23,
+    "count": true,
+    "countTo": "bar",
+    "countIn": true
+   },
+   "accV": 2
+  },
+  {
+   "name": "Raise a Hallelujah",
+   "bpm": 81,
+   "sig": "4/4",
+   "accents": {
+    "3/4": [
+     2,
+     1,
+     1
+    ],
+    "4/4": [
+     2,
+     1,
+     2,
+     1
+    ],
+    "6/8": [
+     2,
+     1,
+     1,
+     1,
+     1,
+     1
+    ]
+   },
+   "left": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "q"
+   },
+   "right": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "e"
+   },
+   "pad": {
+    "on": true,
+    "key": 0,
+    "mode": "major",
+    "vol": 15
+   },
+   "guide": {
+    "vol": 24,
+    "count": true,
+    "countTo": "bar",
+    "countIn": true
+   },
+   "accV": 2
+  },
+  {
+   "name": "Forever Reign",
+   "bpm": 78,
+   "sig": "4/4",
+   "accents": {
+    "3/4": [
+     2,
+     1,
+     1
+    ],
+    "4/4": [
+     2,
+     1,
+     2,
+     1
+    ],
+    "6/8": [
+     2,
+     1,
+     1,
+     1,
+     1,
+     1
+    ]
+   },
+   "left": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "q"
+   },
+   "right": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "e"
+   },
+   "pad": {
+    "on": true,
+    "key": 2,
+    "mode": "major",
+    "vol": 15
+   },
+   "guide": {
+    "vol": 24,
+    "count": true,
+    "countTo": "bar",
+    "countIn": true
+   },
+   "accV": 2
+  },
+  {
+   "name": "This is Our God",
+   "bpm": 78,
+   "sig": "4/4",
+   "accents": {
+    "3/4": [
+     2,
+     1,
+     1
+    ],
+    "4/4": [
+     2,
+     1,
+     2,
+     1
+    ],
+    "6/8": [
+     2,
+     1,
+     1,
+     1,
+     1,
+     1
+    ]
+   },
+   "left": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "q"
+   },
+   "right": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "e"
+   },
+   "pad": {
+    "on": true,
+    "key": 0,
+    "mode": "major",
+    "vol": 15
+   },
+   "guide": {
+    "vol": 24,
+    "count": true,
+    "countTo": "bar",
+    "countIn": true
+   },
+   "accV": 2
+  },
+  {
+   "name": "This I Believe",
+   "bpm": 66,
+   "sig": "4/4",
+   "accents": {
+    "3/4": [
+     2,
+     1,
+     1
+    ],
+    "4/4": [
+     2,
+     1,
+     2,
+     1
+    ],
+    "6/8": [
+     2,
+     1,
+     1,
+     1,
+     1,
+     1
+    ]
+   },
+   "left": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "q"
+   },
+   "right": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "e"
+   },
+   "pad": {
+    "on": true,
+    "key": 4,
+    "mode": "major",
+    "vol": 15
+   },
+   "guide": {
+    "vol": 24,
+    "count": true,
+    "countTo": "bar",
+    "countIn": true
+   },
+   "accV": 2
+  },
+  {
+   "name": "How Great is Our God",
+   "bpm": 72,
+   "sig": "4/4",
+   "accents": {
+    "3/4": [
+     2,
+     1,
+     1
+    ],
+    "4/4": [
+     2,
+     1,
+     2,
+     1
+    ],
+    "6/8": [
+     2,
+     1,
+     1,
+     1,
+     1,
+     1
+    ]
+   },
+   "left": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "q"
+   },
+   "right": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "e"
+   },
+   "pad": {
+    "on": true,
+    "key": 2,
+    "mode": "major",
+    "vol": 15
+   },
+   "guide": {
+    "vol": 24,
+    "count": true,
+    "countTo": "bar",
+    "countIn": true
+   },
+   "accV": 2
+  }
+ ]
+}
