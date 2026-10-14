@@ -54,6 +54,14 @@ h1{font-size:16px;margin:0;white-space:nowrap}
 .srow .sdel{width:32px;height:32px;padding:0;font-size:16px;border-radius:8px;color:var(--mut);flex:none}
 .modalEmpty{color:var(--mut);font-size:13px;padding:14px 4px;text-align:center}
 .modalHead{flex-wrap:wrap}
+.libBar{display:flex;align-items:center;gap:6px;padding:6px 12px;border-bottom:1px solid #262b35;background:#171b22}
+.libStatus{flex:1;font-size:12px;color:var(--mut);min-width:0;line-height:1.25}
+.libStatus b{color:var(--fg);font-weight:600}
+.libBar .pub{background:var(--acc);color:#000;font-weight:700}
+.libBar .key{width:34px;padding:0;font-size:15px;color:var(--mut)}
+.libBar button[hidden]{display:none}
+.srow .sname small i{font-style:normal;color:var(--acc)}
+.srow .sname.cur small i{color:#000}
 .mbtns{display:flex;gap:6px}
 .mbtn{height:30px;padding:0 12px;font-size:13px;border-radius:8px;font-weight:600}
 .modal.share{background:rgba(0,0,0,.88);padding:10px;z-index:30}
@@ -301,6 +309,7 @@ input[type=range]{width:100%;margin:8px 0 2px;accent-color:var(--acc);height:24p
 <div class="modal" id="songModal" hidden>
   <div class="modalBox">
     <div class="modalHead"><span class="ttl">Saved songs</span><span class="mbtns"><button class="mbtn" id="songSend">Send</button><button class="mbtn" id="songRecv">Receive</button></span><span class="modalTip">number = slot, name = load</span><button class="modalClose" id="modalClose" aria-label="close">&times;</button></div>
+    <div class="libBar"><span class="libStatus" id="libStatus"></span><button class="mbtn" id="libRefresh">Refresh</button><button class="mbtn pub" id="libPublish" hidden>Publish</button><button class="mbtn key" id="libKey" aria-label="publish key">&#9881;</button></div>
     <div class="modalBody" id="songRows"></div>
   </div>
 </div>
@@ -933,7 +942,8 @@ function loadSong(sg){
   songName=sg.name; renderAll(); persist(); toast('Loaded "'+sg.name+'"');
 }
 function deleteSong(name){
-  if(!confirm('Delete "'+name+'"?')) return;
+  var isLib=loadSongs().some(function(s){ return s.name===name && s.lib; });
+  if(!confirm('Delete "'+name+'"?'+(isLib ? '\n(It is a library song, so it comes back on the next library refresh.)' : ''))) return;
   storeSongs(loadSongs().filter(function(s){ return s.name!==name; }));
   storeSlots(loadSlots().map(function(n){ return n===name ? '' : n; }));
   if(songName===name){ songName=''; $('songName').textContent='unsaved'; }
@@ -1179,6 +1189,146 @@ function buildShare(){
   document.addEventListener('visibilitychange', function(){ if(document.visibilityState!=='visible' && !$('scanModal').hidden) closeScan(); });
 }
 
+/* ---------- shared song library ----------
+   songs.json lives next to the app on GitHub Pages. Every copy of the app pulls it when it opens online and merges it
+   (library wins on a same name, library songs removed upstream disappear, songs saved only on this phone stay).
+   One phone holds a publish key and pushes its songs up through the GitHub contents API. */
+var LIB_URL='https://akojep.github.io/split-metronome/songs.json';
+var LIB_API='https://api.github.com/repos/akojep/split-metronome/contents/songs.json';
+var LIB_META_KEY='splitmetro.lib', PUB_KEY='splitmetro.pubkey', LIB_REFRESH_MS=10*60*1000;
+var libBusy=false;
+function pubKey(){ try{ return localStorage.getItem(PUB_KEY)||''; }catch(e){ return ''; } }
+function libMeta(){ try{ return JSON.parse(localStorage.getItem(LIB_META_KEY)||'{}')||{}; }catch(e){ return {}; } }
+function setLibMeta(m){ try{ localStorage.setItem(LIB_META_KEY, JSON.stringify(m)); }catch(e){} }
+function cleanSong(sg){ var c=Object.assign({}, sg); delete c.lib; return c; }
+/* a song object from outside (library file) -> a safe song, or null */
+function normSong(sg){
+  if(!sg || typeof sg.name!=='string' || !sg.name.trim()) return null;
+  var bpm=Math.round(+sg.bpm); if(!(bpm>=30 && bpm<=300)) return null;
+  var sig=normSig(sg); if(SIGS.indexOf(sig)<0) sig='4/4';
+  return { name:Array.from(sg.name.trim()).slice(0,80).join(''), bpm:bpm, sig:sig, accV:2, accents:normAccents(sg.accents),
+    left:normSide(sg.left,'q'), right:normSide(sg.right,'e'), pad:normPad(sg.pad), guide:normGuide(sg.guide) };
+}
+function b64utf8(str){
+  var bytes=new TextEncoder().encode(str), bin='';
+  for(var i=0;i<bytes.length;i+=8192) bin+=String.fromCharCode.apply(null, bytes.subarray(i, i+8192));
+  return btoa(bin);
+}
+function applyLibrary(songs, updated){
+  var list=loadSongs(), byName={}, inLib={}, add=0, upd=0, del=0;
+  list.forEach(function(sg,i){ byName[sg.name.toLowerCase()]=i; });
+  songs.forEach(function(sg){
+    var k=sg.name.toLowerCase(); if(inLib[k]) return; inLib[k]=true;
+    var copy=Object.assign({}, sg, {lib:true});
+    if(byName[k]!==undefined){
+      copy.name=list[byName[k]].name;   /* keep this phone's spelling so slots and the loaded song still match */
+      if(JSON.stringify(cleanSong(list[byName[k]]))!==JSON.stringify(cleanSong(copy))) upd++;
+      list[byName[k]]=copy;
+    } else { list.push(copy); byName[k]=list.length-1; add++; }
+  });
+  var kept=list.filter(function(sg){ if(sg.lib && !inLib[sg.name.toLowerCase()]){ del++; return false; } return true; });
+  storeSongs(kept);
+  if(del) storeSlots(loadSlots().map(function(n){ return kept.some(function(s){ return s.name===n; }) ? n : ''; }));
+  setLibMeta(Object.assign(libMeta(), {count:songs.length, updated:updated||'', at:Date.now(), remoteCount:songs.length, missing:false}));
+  renderSongs(); if(!$('songModal').hidden) renderSongModal();
+  renderLibStatus();
+  return {add:add, upd:upd, del:del};
+}
+function libDate(iso){ var d=new Date(iso); return isNaN(d) ? '' : d.toLocaleDateString(undefined,{day:'numeric',month:'short'})+' '+d.toLocaleTimeString(undefined,{hour:'2-digit',minute:'2-digit'}); }
+function fetchLibrary(manual){
+  if(libBusy) return Promise.resolve();
+  if(!manual && navigator.onLine===false) return Promise.resolve();
+  libBusy=true; renderLibStatus();
+  return fetch(LIB_URL+'?t='+Date.now(), {cache:'no-store'}).then(function(r){
+    if(r.status===404) return {songs:[], missing:true};
+    if(!r.ok) throw new Error('http '+r.status);
+    return r.json();
+  }).then(function(d){
+    var m=libMeta();
+    if(d && d.missing){
+      if(m.lastPublished){ if(manual) toast('GitHub is still publishing your last update, try again in a minute'); return; }
+      setLibMeta(Object.assign(m, {remoteCount:0, updated:'', at:Date.now(), missing:true})); if(manual) toast('No library published yet'); return;
+    }
+    if(!d || !Array.isArray(d.songs)) throw new Error('bad file');   /* wrong shape must not look like an empty library */
+    var songs=d.songs.map(normSong).filter(Boolean);
+    /* GitHub Pages can serve the previous file for a few minutes after a publish: never step backwards */
+    var got=Date.parse(d.updated||''), prev=Math.max(Date.parse(m.updated||'')||0, Date.parse(m.lastPublished||'')||0);
+    if(prev && (!(got>=prev))){ if(manual) toast('GitHub is still publishing the last update, try again in a minute'); return; }
+    if(pubKey()){   /* this phone publishes: never let the library overwrite its own edits on its own */
+      setLibMeta(Object.assign(libMeta(), {remoteCount:songs.length, updated:d.updated||'', at:Date.now(), missing:false}));
+      if(manual){
+        if(confirm('Merge the library ('+songs.length+' songs) into this phone? Same-named songs are replaced by the library version.')){ var r=applyLibrary(songs, d.updated); toast('Pulled '+songs.length+' songs'); }
+      }
+      return;
+    }
+    var res=applyLibrary(songs, d.updated);
+    var n=res.add+res.upd+res.del;
+    if(manual) toast(n ? 'Library: '+res.add+' new, '+res.upd+' updated'+(res.del ? ', '+res.del+' removed' : '') : 'Library up to date');
+    else if(n) toast('Library: '+res.add+' new, '+res.upd+' updated'+(res.del ? ', '+res.del+' removed' : ''));
+  }).catch(function(e){ if(manual) toast('Library not reachable right now'); })
+  .then(function(){ libBusy=false; renderLibStatus(); });
+}
+function publishLibrary(){
+  var key=pubKey(); if(!key || libBusy) return;
+  var songs=loadSongs().map(cleanSong);
+  if(!songs.length){ toast('No songs to publish'); return; }
+  if(!confirm('Publish '+songs.length+' songs to the library? Everyone gets them on their next open.')) return;
+  var updated=new Date().toISOString();
+  var body=JSON.stringify({v:1, updated:updated, songs:songs}, null, 1);
+  var hdr={'Authorization':'Bearer '+key, 'Accept':'application/vnd.github+json', 'X-GitHub-Api-Version':'2022-11-28'};
+  libBusy=true; renderLibStatus();
+  fetch(LIB_API+'?ref=main', {headers:hdr, cache:'no-store'}).then(function(r){
+    if(r.status===404) return null;
+    if(r.status===401 || r.status===403) throw new Error('the publish key was rejected (expired or wrong)');
+    if(!r.ok) throw new Error('GitHub answered '+r.status);
+    return r.json();
+  }).then(function(cur){
+    var payload={message:'Publish '+songs.length+' songs from Split Metronome', content:b64utf8(body), branch:'main'};
+    if(cur && cur.sha) payload.sha=cur.sha;
+    return fetch(LIB_API, {method:'PUT', headers:Object.assign({'Content-Type':'application/json'}, hdr), body:JSON.stringify(payload)});
+  }).then(function(r){
+    if(r.status===401 || r.status===403) throw new Error('the publish key was rejected (expired or wrong)');
+    if(r.status===409) throw new Error('someone else published at the same moment, try again');
+    if(!r.ok) throw new Error('GitHub answered '+r.status);
+    setLibMeta(Object.assign(libMeta(), {count:songs.length, remoteCount:songs.length, updated:updated, lastPublished:updated, at:Date.now(), published:Date.now(), missing:false}));
+    toast('Published '+songs.length+' songs. Others get them within a few minutes, on their next open.');
+  }).catch(function(e){ toast('Publish failed: '+(e && e.message || 'no connection')); })
+  .then(function(){ libBusy=false; renderLibStatus(); });
+}
+function setPublishKey(){
+  var cur=pubKey();
+  var v=prompt(cur ? 'This phone publishes the library (key ending in '+cur.slice(-4)+'). Paste a new key to replace it, or type CLEAR to stop publishing from here.' : 'Paste the publish key (a GitHub token). Only the phone that owns the library needs this.', '');
+  if(v===null) return;
+  v=v.trim();
+  if(cur && !v) return;                      /* OK on an empty box keeps the current key */
+  if(v.toUpperCase()==='CLEAR') v='';
+  try{ if(v) localStorage.setItem(PUB_KEY, v); else localStorage.removeItem(PUB_KEY); }catch(e){}
+  renderLibStatus(); toast(v ? 'This phone can publish now' : 'Publish key removed');
+}
+function renderLibStatus(){
+  var el=$('libStatus'); if(!el) return;
+  var m=libMeta(), key=pubKey();
+  $('libPublish').hidden=!key; $('libPublish').disabled=libBusy; $('libRefresh').disabled=libBusy;
+  $('libRefresh').textContent = key ? 'Pull' : 'Refresh';
+  if(libBusy){ el.textContent='Library: checking…'; return; }
+  if(key){
+    el.innerHTML='<b>This phone publishes the library.</b> '+(m.published ? 'Last published '+libDate(new Date(m.published).toISOString())+'.' : 'Not published from here yet.')+(m.remoteCount!==undefined ? ' Online: '+m.remoteCount+' songs.' : '');
+    return;
+  }
+  if(m.missing) el.textContent='Library: nothing published yet';
+  else if(m.count!==undefined) el.innerHTML='<b>Library: '+m.count+' songs</b>'+(m.updated ? ', updated '+libDate(m.updated) : '')+(m.at ? ' (checked '+libDate(new Date(m.at).toISOString())+')' : '');
+  else el.textContent='Library: not checked yet (needs internet once)';
+}
+function buildLibrary(){
+  $('libRefresh').addEventListener('click', function(){ fetchLibrary(true); });
+  $('libPublish').addEventListener('click', publishLibrary);
+  $('libKey').addEventListener('click', setPublishKey);
+  renderLibStatus();
+  setTimeout(function(){ fetchLibrary(false); }, 1200);   /* after first paint */
+  window.addEventListener('online', function(){ fetchLibrary(false); });
+  document.addEventListener('visibilitychange', function(){ if(document.visibilityState==='visible'){ var m=libMeta(); if(!m.at || Date.now()-m.at>LIB_REFRESH_MS) fetchLibrary(false); } });
+}
+
 function openSongModal(){ renderSongModal(); $('songModal').hidden=false; }
 function closeSongModal(){ $('songModal').hidden=true; }
 function renderSongModal(){
@@ -1190,6 +1340,7 @@ function renderSongModal(){
     var nm=document.createElement('button'); nm.className='sname'+(sg.name===songName?' cur':'');
     var b=document.createElement('b'); b.textContent=sg.name; var sm=document.createElement('small');
     sm.textContent=sg.bpm+' bpm  '+normSig(sg)+(sg.pad && sg.pad.on ? '  pad '+KEYS[normPad(sg.pad).key] : '');
+    if(sg.lib){ var li=document.createElement('i'); li.textContent='  library'; sm.appendChild(li); }
     nm.appendChild(b); nm.appendChild(sm);
     nm.addEventListener('click', function(){ loadSong(sg); renderSongModal(); });
     var ss=document.createElement('div'); ss.className='sslots';
@@ -1254,7 +1405,7 @@ function toast(msg){ var t=$('toast'); t.textContent=msg; t.classList.add('show'
 /* ---------- wire up ---------- */
 restore();
 dots.left=$('dotL'); dots.right=$('dotR');
-buildSubs('left'); buildSubs('right'); buildSounds('left'); buildSounds('right'); buildSig(); buildKeys(); buildGuide(); buildSlots(); buildShare();
+buildSubs('left'); buildSubs('right'); buildSounds('left'); buildSounds('right'); buildSig(); buildKeys(); buildGuide(); buildSlots(); buildShare(); buildLibrary();
 renderAll();
 
 holdRepeat($('bpmUp'), function(){ setBpm(S.bpm+1); });
