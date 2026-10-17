@@ -1,6 +1,6 @@
 {
  "v": 1,
- "updated": "2026-10-14T10:43:38.466Z",
+ "updated": "2026-10-17T22:43:05.385Z",
  "songs": [
   {
    "name": "One Way",
@@ -1273,6 +1273,210 @@
     "vol": 24,
     "count": true,
     "countTo": "bar",
+    "countIn": true
+   },
+   "accV": 2
+  },
+  {
+   "name": "For All You’ve Done",
+   "bpm": 128,
+   "sig": "4/4",
+   "accents": {
+    "3/4": [
+     2,
+     1,
+     1
+    ],
+    "4/4": [
+     2,
+     1,
+     2,
+     1
+    ],
+    "6/8": [
+     2,
+     1,
+     1,
+     1,
+     1,
+     1
+    ]
+   },
+   "left": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "q"
+   },
+   "right": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "e"
+   },
+   "pad": {
+    "on": true,
+    "key": 2,
+    "mode": "major",
+    "vol": 19
+   },
+   "guide": {
+    "vol": 30,
+    "count": true,
+    "countTo": "4",
+    "countIn": true
+   },
+   "accV": 2
+  },
+  {
+   "name": "Better is One Day",
+   "bpm": 77,
+   "sig": "4/4",
+   "accents": {
+    "3/4": [
+     2,
+     1,
+     1
+    ],
+    "4/4": [
+     2,
+     1,
+     2,
+     1
+    ],
+    "6/8": [
+     2,
+     1,
+     1,
+     1,
+     1,
+     1
+    ]
+   },
+   "left": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "q"
+   },
+   "right": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "e"
+   },
+   "pad": {
+    "on": true,
+    "key": 2,
+    "mode": "major",
+    "vol": 19
+   },
+   "guide": {
+    "vol": 30,
+    "count": true,
+    "countTo": "4",
+    "countIn": true
+   },
+   "accV": 2
+  },
+  {
+   "name": "Cornerstone - 68",
+   "bpm": 68,
+   "sig": "4/4",
+   "accents": {
+    "3/4": [
+     2,
+     1,
+     1
+    ],
+    "4/4": [
+     2,
+     1,
+     2,
+     1
+    ],
+    "6/8": [
+     2,
+     1,
+     1,
+     1,
+     1,
+     1
+    ]
+   },
+   "left": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "q"
+   },
+   "right": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "e"
+   },
+   "pad": {
+    "on": true,
+    "key": 0,
+    "mode": "major",
+    "vol": 19
+   },
+   "guide": {
+    "vol": 30,
+    "count": true,
+    "countTo": "4",
+    "countIn": true
+   },
+   "accV": 2
+  },
+  {
+   "name": "All Hail King Jesus",
+   "bpm": 72,
+   "sig": "4/4",
+   "accents": {
+    "3/4": [
+     2,
+     1,
+     1
+    ],
+    "4/4": [
+     2,
+     1,
+     2,
+     1
+    ],
+    "6/8": [
+     2,
+     1,
+     1,
+     1,
+     1,
+     1
+    ]
+   },
+   "left": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "q"
+   },
+   "right": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "e"
+   },
+   "pad": {
+    "on": true,
+    "key": 0,
+    "mode": "major",
+    "vol": 19
+   },
+   "guide": {
+    "vol": 30,
+    "count": true,
+    "countTo": "4",
     "countIn": true
    },
    "accV": 2
