@@ -1,6 +1,6 @@
 {
  "v": 1,
- "updated": "2026-10-17T22:44:24.101Z",
+ "updated": "2026-10-24T22:56:30.437Z",
  "songs": [
   {
    "name": "One Way",
@@ -1520,6 +1520,261 @@
    },
    "pad": {
     "on": true,
+    "key": 0,
+    "mode": "major",
+    "vol": 19
+   },
+   "guide": {
+    "vol": 30,
+    "count": true,
+    "countTo": "4",
+    "countIn": true
+   },
+   "accV": 2
+  },
+  {
+   "name": "Christ be Magnified",
+   "bpm": 72,
+   "sig": "4/4",
+   "accents": {
+    "3/4": [
+     2,
+     1,
+     0
+    ],
+    "4/4": [
+     2,
+     1,
+     2,
+     1
+    ],
+    "6/8": [
+     2,
+     1,
+     1,
+     2,
+     1,
+     1
+    ]
+   },
+   "left": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "q"
+   },
+   "right": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "e"
+   },
+   "pad": {
+    "on": true,
+    "key": 0,
+    "mode": "major",
+    "vol": 19
+   },
+   "guide": {
+    "vol": 30,
+    "count": true,
+    "countTo": "4",
+    "countIn": true
+   },
+   "accV": 2
+  },
+  {
+   "name": "Salamat Salamat",
+   "bpm": 128,
+   "sig": "4/4",
+   "accents": {
+    "3/4": [
+     2,
+     1,
+     0
+    ],
+    "4/4": [
+     2,
+     1,
+     2,
+     1
+    ],
+    "6/8": [
+     2,
+     1,
+     1,
+     2,
+     1,
+     1
+    ]
+   },
+   "left": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "q"
+   },
+   "right": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "e"
+   },
+   "pad": {
+    "on": false,
+    "key": 0,
+    "mode": "major",
+    "vol": 19
+   },
+   "guide": {
+    "vol": 30,
+    "count": true,
+    "countTo": "4",
+    "countIn": true
+   },
+   "accV": 2
+  },
+  {
+   "name": "Diyos Ka Sa Amin",
+   "bpm": 70,
+   "sig": "4/4",
+   "accents": {
+    "3/4": [
+     2,
+     1,
+     0
+    ],
+    "4/4": [
+     2,
+     1,
+     2,
+     1
+    ],
+    "6/8": [
+     2,
+     1,
+     1,
+     2,
+     1,
+     1
+    ]
+   },
+   "left": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "q"
+   },
+   "right": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "e"
+   },
+   "pad": {
+    "on": false,
+    "key": 0,
+    "mode": "major",
+    "vol": 19
+   },
+   "guide": {
+    "vol": 30,
+    "count": true,
+    "countTo": "4",
+    "countIn": true
+   },
+   "accV": 2
+  },
+  {
+   "name": "How Grea Thou Art",
+   "bpm": 70,
+   "sig": "4/4",
+   "accents": {
+    "3/4": [
+     2,
+     1,
+     0
+    ],
+    "4/4": [
+     2,
+     1,
+     2,
+     1
+    ],
+    "6/8": [
+     2,
+     1,
+     1,
+     2,
+     1,
+     1
+    ]
+   },
+   "left": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "q"
+   },
+   "right": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "e"
+   },
+   "pad": {
+    "on": false,
+    "key": 0,
+    "mode": "major",
+    "vol": 19
+   },
+   "guide": {
+    "vol": 30,
+    "count": true,
+    "countTo": "4",
+    "countIn": true
+   },
+   "accV": 2
+  },
+  {
+   "name": "Pupurihin Ka sa Awit",
+   "bpm": 70,
+   "sig": "4/4",
+   "accents": {
+    "3/4": [
+     2,
+     1,
+     0
+    ],
+    "4/4": [
+     2,
+     1,
+     2,
+     1
+    ],
+    "6/8": [
+     2,
+     1,
+     1,
+     2,
+     1,
+     1
+    ]
+   },
+   "left": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "q"
+   },
+   "right": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "e"
+   },
+   "pad": {
+    "on": false,
     "key": 0,
     "mode": "major",
     "vol": 19
