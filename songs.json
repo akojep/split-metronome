@@ -1,6 +1,6 @@
 {
  "v": 1,
- "updated": "2026-10-24T22:56:30.437Z",
+ "updated": "2026-10-31T22:38:52.366Z",
  "songs": [
   {
    "name": "One Way",
@@ -1783,6 +1783,210 @@
     "vol": 30,
     "count": true,
     "countTo": "4",
+    "countIn": true
+   },
+   "accV": 2
+  },
+  {
+   "name": "Now That You’re Near",
+   "bpm": 122,
+   "sig": "4/4",
+   "accents": {
+    "3/4": [
+     2,
+     1,
+     1
+    ],
+    "4/4": [
+     2,
+     1,
+     2,
+     1
+    ],
+    "6/8": [
+     2,
+     1,
+     1,
+     1,
+     1,
+     1
+    ]
+   },
+   "left": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "q"
+   },
+   "right": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "e"
+   },
+   "pad": {
+    "on": false,
+    "key": 4,
+    "mode": "major",
+    "vol": 14
+   },
+   "guide": {
+    "vol": 23,
+    "count": true,
+    "countTo": "bar",
+    "countIn": true
+   },
+   "accV": 2
+  },
+  {
+   "name": "I Love You Lord",
+   "bpm": 62,
+   "sig": "4/4",
+   "accents": {
+    "3/4": [
+     2,
+     1,
+     1
+    ],
+    "4/4": [
+     2,
+     1,
+     2,
+     1
+    ],
+    "6/8": [
+     2,
+     1,
+     1,
+     1,
+     1,
+     1
+    ]
+   },
+   "left": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "q"
+   },
+   "right": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "e"
+   },
+   "pad": {
+    "on": false,
+    "key": 4,
+    "mode": "major",
+    "vol": 14
+   },
+   "guide": {
+    "vol": 23,
+    "count": true,
+    "countTo": "bar",
+    "countIn": true
+   },
+   "accV": 2
+  },
+  {
+   "name": "Great Are You Lord",
+   "bpm": 72,
+   "sig": "6/8",
+   "accents": {
+    "3/4": [
+     2,
+     1,
+     1
+    ],
+    "4/4": [
+     2,
+     1,
+     2,
+     1
+    ],
+    "6/8": [
+     2,
+     1,
+     1,
+     2,
+     1,
+     1
+    ]
+   },
+   "left": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "e"
+   },
+   "right": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "e"
+   },
+   "pad": {
+    "on": false,
+    "key": 4,
+    "mode": "major",
+    "vol": 14
+   },
+   "guide": {
+    "vol": 23,
+    "count": true,
+    "countTo": "bar",
+    "countIn": true
+   },
+   "accV": 2
+  },
+  {
+   "name": "Goodness of God",
+   "bpm": 64,
+   "sig": "4/4",
+   "accents": {
+    "3/4": [
+     2,
+     1,
+     1
+    ],
+    "4/4": [
+     2,
+     1,
+     2,
+     1
+    ],
+    "6/8": [
+     2,
+     1,
+     1,
+     2,
+     1,
+     1
+    ]
+   },
+   "left": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "q"
+   },
+   "right": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "e"
+   },
+   "pad": {
+    "on": false,
+    "key": 4,
+    "mode": "major",
+    "vol": 14
+   },
+   "guide": {
+    "vol": 23,
+    "count": true,
+    "countTo": "bar",
     "countIn": true
    },
    "accV": 2
