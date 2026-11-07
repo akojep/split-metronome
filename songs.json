@@ -1,6 +1,6 @@
 {
  "v": 1,
- "updated": "2026-10-31T22:38:52.366Z",
+ "updated": "2026-11-07T13:06:20.112Z",
  "songs": [
   {
    "name": "One Way",
@@ -1987,6 +1987,261 @@
     "vol": 23,
     "count": true,
     "countTo": "bar",
+    "countIn": true
+   },
+   "accV": 2
+  },
+  {
+   "name": "God I look to You",
+   "bpm": 68,
+   "sig": "4/4",
+   "accents": {
+    "3/4": [
+     2,
+     1,
+     1
+    ],
+    "4/4": [
+     2,
+     1,
+     2,
+     1
+    ],
+    "6/8": [
+     2,
+     1,
+     1,
+     1,
+     1,
+     1
+    ]
+   },
+   "left": {
+    "vol": 80,
+    "mute": false,
+    "sound": "beep",
+    "note": "q"
+   },
+   "right": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "e"
+   },
+   "pad": {
+    "on": true,
+    "key": 9,
+    "mode": "major",
+    "vol": 19
+   },
+   "guide": {
+    "vol": 40,
+    "count": true,
+    "countTo": "4",
+    "countIn": true
+   },
+   "accV": 2
+  },
+  {
+   "name": "Tribes",
+   "bpm": 124,
+   "sig": "4/4",
+   "accents": {
+    "3/4": [
+     2,
+     1,
+     1
+    ],
+    "4/4": [
+     2,
+     1,
+     2,
+     1
+    ],
+    "6/8": [
+     2,
+     1,
+     1,
+     1,
+     1,
+     1
+    ]
+   },
+   "left": {
+    "vol": 80,
+    "mute": false,
+    "sound": "beep",
+    "note": "q"
+   },
+   "right": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "e"
+   },
+   "pad": {
+    "on": true,
+    "key": 2,
+    "mode": "major",
+    "vol": 19
+   },
+   "guide": {
+    "vol": 40,
+    "count": true,
+    "countTo": "4",
+    "countIn": true
+   },
+   "accV": 2
+  },
+  {
+   "name": "Living Hope",
+   "bpm": 71,
+   "sig": "4/4",
+   "accents": {
+    "3/4": [
+     2,
+     1,
+     1
+    ],
+    "4/4": [
+     2,
+     1,
+     2,
+     1
+    ],
+    "6/8": [
+     2,
+     1,
+     1,
+     1,
+     1,
+     1
+    ]
+   },
+   "left": {
+    "vol": 80,
+    "mute": false,
+    "sound": "beep",
+    "note": "q"
+   },
+   "right": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "e"
+   },
+   "pad": {
+    "on": true,
+    "key": 7,
+    "mode": "major",
+    "vol": 19
+   },
+   "guide": {
+    "vol": 40,
+    "count": true,
+    "countTo": "4",
+    "countIn": true
+   },
+   "accV": 2
+  },
+  {
+   "name": "Depths",
+   "bpm": 68,
+   "sig": "4/4",
+   "accents": {
+    "3/4": [
+     2,
+     1,
+     1
+    ],
+    "4/4": [
+     2,
+     1,
+     2,
+     1
+    ],
+    "6/8": [
+     2,
+     1,
+     1,
+     1,
+     1,
+     1
+    ]
+   },
+   "left": {
+    "vol": 80,
+    "mute": false,
+    "sound": "beep",
+    "note": "q"
+   },
+   "right": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "e"
+   },
+   "pad": {
+    "on": true,
+    "key": 9,
+    "mode": "major",
+    "vol": 19
+   },
+   "guide": {
+    "vol": 40,
+    "count": true,
+    "countTo": "4",
+    "countIn": true
+   },
+   "accV": 2
+  },
+  {
+   "name": "Man of Sorrows",
+   "bpm": 72,
+   "sig": "4/4",
+   "accents": {
+    "3/4": [
+     2,
+     1,
+     1
+    ],
+    "4/4": [
+     2,
+     1,
+     2,
+     1
+    ],
+    "6/8": [
+     2,
+     1,
+     1,
+     1,
+     1,
+     1
+    ]
+   },
+   "left": {
+    "vol": 80,
+    "mute": false,
+    "sound": "beep",
+    "note": "q"
+   },
+   "right": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "e"
+   },
+   "pad": {
+    "on": true,
+    "key": 7,
+    "mode": "major",
+    "vol": 19
+   },
+   "guide": {
+    "vol": 40,
+    "count": true,
+    "countTo": "4",
     "countIn": true
    },
    "accV": 2
