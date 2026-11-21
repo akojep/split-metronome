@@ -34,14 +34,14 @@ h1{font-size:16px;margin:0;white-space:nowrap}
 .slots button .s{font-size:9px;color:var(--mut);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .slots button.empty .n{color:var(--mut);font-weight:400}
 .slots button.cur{background:var(--acc);color:#000} .slots button.cur .s{color:#000}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:20;display:flex;align-items:center;justify-content:center;padding:14px}
+.modal{position:fixed;top:0;right:0;bottom:0;left:0;background:rgba(0,0,0,.6);z-index:20;display:flex;align-items:center;justify-content:center;padding:14px}
 .modal[hidden]{display:none}
 .modalBox{background:var(--card);border-radius:16px;width:100%;max-width:640px;max-height:92%;display:flex;flex-direction:column;box-shadow:0 12px 40px rgba(0,0,0,.6)}
 .modalHead{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid #262b35}
 .modalHead .ttl{color:var(--acc);font-size:15px}
 .modalTip{flex:1;font-size:11px;color:var(--mut);min-width:0}
 .modalClose{height:32px;width:36px;padding:0;font-size:18px;border-radius:9px;color:var(--mut)}
-.modalBody{overflow:auto;padding:6px 12px 10px}
+.modalBody{overflow:auto;-webkit-overflow-scrolling:touch;padding:6px 12px 10px}
 .srow{display:flex;align-items:center;gap:8px;padding:6px 0;border-top:1px solid #262b35}
 .srow:first-child{border-top:0}
 .srow .sname{flex:1;min-width:0;height:40px;text-align:left;padding:0 10px;display:flex;flex-direction:column;justify-content:center;gap:2px;line-height:1.1}
@@ -182,7 +182,7 @@ input[type=range]{width:100%;margin:8px 0 2px;accent-color:var(--acc);height:24p
 
 /* landscape: everything important on one screen, three columns */
 @media (min-width:640px) and (orientation:landscape){
-  .wrap{max-width:none;padding:6px 8px;height:100vh;height:100dvh;box-sizing:border-box;grid-template-columns:0.9fr 1.3fr 1.15fr;
+  .wrap{max-width:none;padding:6px 8px;height:100%;height:100dvh;box-sizing:border-box;grid-template-columns:0.9fr 1.3fr 1.15fr;
     grid-template-rows:auto minmax(0,1fr);gap:6px;align-items:stretch;
     grid-template-areas:"left sides guide" "left pad guide"}
   .leftCol{display:flex;flex-direction:column;gap:6px;grid-area:left;min-height:0}
@@ -228,6 +228,24 @@ input[type=range]{width:100%;margin:8px 0 2px;accent-color:var(--acc);height:24p
   .slotsCard{padding:6px 8px}
   .cardHead{margin-bottom:6px}
   #songName{display:none}
+}
+/* Older Safari (before 14.1, e.g. an iPad on iOS 12) ignores gap on flex rows: space them with margins instead. Must stay the last block. */
+@supports not (inset:0){
+header,.slotBtns,.modalHead,.srow,.sslots,.libBar,.mbtns,.shareBtns,.scanBar,.bpmRow,.go,.meterRow,.lights,.lights.six,.sig,.side h2,.hbtns,.vrow,.cardHead,.saveRow,#songs li,.meter,.shareBox,.shareSide,.shareInfo,.slots button,.subs button,.srow .sname{gap:0}
+header>*+*,.meterRow>*+*,.cardHead>*+*,.srow>*+*,.scanBar>*+*,.saveRow>*+*,#songs li>*+*,.go>*+*,.lights>*+*{margin-left:8px}
+.modalHead>*+*,.bpmRow>*+*{margin-left:10px}
+.slotBtns>*+*,.libBar>*+*,.mbtns>*+*,.shareBtns>*+*,.sig>*+*,.side h2>*+*{margin-left:6px}
+.sslots>*+*,.hbtns>*+*,.gopts>*+*{margin-left:4px}
+.lights.six>*+*{margin-left:5px}
+.vrow>span{margin-right:6px} .vrow>b{margin-left:6px}
+.meter>*+*{margin-top:8px} .shareBox>*+*{margin-top:10px} .shareSide>*+*{margin-top:8px} .shareInfo>*+*{margin-top:3px} .srow .sname>*+*{margin-top:2px} .slots button>*+*,.subs button>*+*{margin-top:1px}
+@media (min-width:640px) and (orientation:landscape){
+.leftCol,.sideRow{gap:0}
+.leftCol>*+*,.meter>*+*{margin-top:6px}
+.lights>*+*{margin-left:6px}
+.sideRow>*+*{margin-left:8px}
+.shareBox>*+*{margin-top:0;margin-left:14px}
+}
 }
 </style>
 </head>
@@ -399,7 +417,7 @@ function normSide(x, def){
 function normSig(sg){ if(sg.sig) return sg.sig; var b=sg.beatsPerBar; return b===3 ? '3/4' : (b===6 ? '6/8' : '4/4'); }
 
 /* ---------- audio ---------- */
-var ctx=null, gainL, gainR, outMerger;
+var ctx=null, gainL, gainR, outMerger, mergerHold;
 var running=false, nextBeatTime=0, beatInBar=0, barIndex=0, timerId=null;
 var LOOKAHEAD=0.15, INTERVAL=25;
 var queue=[];
@@ -411,13 +429,23 @@ function ensureAudio(){
     ctx = new AC({latencyHint:'interactive'});
     outMerger = ctx.createChannelMerger(2);
     outMerger.connect(ctx.destination);
+    /* Safari before 14.1: the merger only counts inputs with a live connection and would collapse to mono (both ears).
+       A silent source that is never started keeps left = channel 0 and right = channel 1. Harmless elsewhere. */
+    mergerHold = ctx.createBufferSource();
+    mergerHold.connect(outMerger,0,0);
+    mergerHold.connect(outMerger,0,1);
     gainL = ctx.createGain(); gainR = ctx.createGain();
     gainL.connect(outMerger,0,0);   /* hard left */
     gainR.connect(outMerger,0,1);   /* hard right */
     applyVolumes();
     ensureGuide();
   }
-  if(ctx.state==='suspended') ctx.resume();
+  resumeAudio();
+}
+/* iOS can leave the context 'interrupted' (a call, Siri, another app's audio), not only 'suspended' */
+function resumeAudio(){
+  if(!ctx || ctx.state==='running' || ctx.state==='closed' || !ctx.resume) return;
+  var p=ctx.resume(); if(p && p.catch) p.catch(function(){});
 }
 function applyVolumes(){
   if(!ctx) return;
@@ -603,6 +631,7 @@ function applyGuideVolume(){
 /* ---------- scheduler ---------- */
 function scheduleBeat(t, beat, bar){
   var beatLen = countLen();
+  var evs = [{time:t, side:null, beat:beat, bar:bar, k:0}];   /* the light always advances, even on a count with no click */
   ['left','right'].forEach(function(side){
     var n = clicksPer(S[side].note, beat);
     for(var k=0;k<n;k++){
@@ -611,13 +640,23 @@ function scheduleBeat(t, beat, bar){
       var main = S.sig!=='6/8' || beat%3===0;               /* in 6/8 only counts 1 and 4 are real beats */
       var level = k>0 ? 2 : (acc===2 ? 0 : (main ? 1 : 2));  /* in-between counts click softly unless accented */
       if(!(k===0 && acc===0)) click(side,time,level);   /* silent beat: skip the beat click only */
-      queue.push({time:time, side:side, beat:beat, k:k});
+      evs.push({time:time, side:side, beat:beat, k:k});
     }
   });
-  queue.push({time:t, side:null, beat:beat, bar:bar, k:0});   /* always advance the lights, even on a count with no click */
+  /* draw() only looks at the head of the queue, so it must stay in time order: otherwise the light and the other ear's dot
+     wait behind this beat's later subdivision clicks (half a beat late on 1/8, three quarters on 1/16) */
+  evs.sort(function(a,b){ return a.time-b.time; });
+  for(var i=0;i<evs.length;i++) queue.push(evs[i]);
   if(bar===-1 && S.guide.countIn && beat<6) sayGuide('n'+(beat+1), t, null, beatLen);   /* spoken count-in bar before bar 1 */
 }
 function scheduler(){
+  /* after a stall (screen lock, a dialog left open) do not fire every missed click at once: jump to the next count, still on the grid */
+  var behind = ctx.currentTime - nextBeatTime;
+  if(behind > 0.25){
+    var len=countLen(), n=beatsPerBar(), skip=Math.ceil(behind/len), tot=beatInBar+skip;
+    nextBeatTime += skip*len; barIndex += Math.floor(tot/n); beatInBar = tot%n; queue.length = 0;
+    if(barIndex>=0) renderGuideStatus(0);   /* do not leave the "count-in" label up if bar 1 was skipped */
+  }
   while(nextBeatTime < ctx.currentTime + LOOKAHEAD){
     scheduleBeat(nextBeatTime, beatInBar, barIndex);
     nextBeatTime += countLen();
@@ -698,7 +737,7 @@ setInterval(function(){ if(needAwake() && !wakeLock && document.visibilityState=
 keepAwake();
 ['pointerdown','touchstart'].forEach(function(n){ document.addEventListener(n, function(){ if(!wakeLock) keepAwake(); }, {passive:true}); });   /* some phones only grant it after a touch */
 document.addEventListener('visibilitychange', function(){
-  if(document.visibilityState==='visible' && needAwake()){ if(ctx && ctx.state==='suspended') ctx.resume(); keepAwake(); }
+  if(document.visibilityState==='visible' && needAwake()){ resumeAudio(); keepAwake(); }
 });
 /* installed app: prefer landscape when the phone allows it */
 function lockLandscape(){ try{ if(screen.orientation && screen.orientation.lock) screen.orientation.lock('landscape').catch(function(){}); }catch(e){} }
@@ -720,12 +759,23 @@ function tap(){
   }
   var b=$('tapBtn'); b.classList.add('hit'); setTimeout(function(){ b.classList.remove('hit'); },80);
 }
+/* Pointer Events arrived with Safari 13. An older iPad (iOS 12) only sends touch events, plus fake mouse events after
+   each touch, so every press handler picks ONE family: pointer, else touch, else mouse. Never two, or a press fires twice. */
 function holdRepeat(btn, fn){
   var t=null, r=null;
-  var down=function(e){ e.preventDefault(); fn(); t=setTimeout(function(){ r=setInterval(fn,70); },450); };
-  var up=function(){ clearTimeout(t); clearInterval(r); };
-  btn.addEventListener('pointerdown',down);
-  ['pointerup','pointercancel','pointerleave'].forEach(function(n){ btn.addEventListener(n,up); });
+  var up=function(){ clearTimeout(t); clearInterval(r); t=r=null; };
+  var down=function(e){ e.preventDefault(); up(); fn(); t=setTimeout(function(){ r=setInterval(fn,70); },450); };
+  if(window.PointerEvent){
+    btn.addEventListener('pointerdown',down);
+    ['pointerup','pointercancel','pointerleave'].forEach(function(n){ btn.addEventListener(n,up); });
+  } else if('ontouchstart' in window){
+    btn.addEventListener('touchstart',down,{passive:false});
+    ['touchend','touchcancel'].forEach(function(n){ btn.addEventListener(n,up); });
+    window.addEventListener('blur',up); window.addEventListener('pagehide',up);
+  } else {
+    btn.addEventListener('mousedown',down);
+    ['mouseup','mouseleave'].forEach(function(n){ btn.addEventListener(n,up); });
+  }
 }
 
 /* ---------- sides ---------- */
@@ -758,6 +808,32 @@ function buildSounds(side){
 }
 function closeSoundPops(){ ['L','R'].forEach(function(c){ $('snd'+c).hidden=true; $('gear'+c).classList.remove('open'); }); }
 document.addEventListener('click', closeSoundPops);
+/* iOS sends no click for a tap on plain page space, so also close the gear menus on a touch tap */
+(function(){
+  var x=0, y=0;
+  document.addEventListener('touchstart', function(e){ var p=e.touches && e.touches[0]; if(p){ x=p.clientX; y=p.clientY; } }, {passive:true});
+  document.addEventListener('touchend', function(e){
+    if($('sndL').hidden && $('sndR').hidden) return;                         /* nothing open */
+    var p=e.changedTouches && e.changedTouches[0], t=e.target;
+    if(p && (Math.abs(p.clientX-x)>10 || Math.abs(p.clientY-y)>10)) return;   /* a scroll or a slider drag, not a tap */
+    if(t && t.nodeType===3) t=t.parentNode;
+    if(t && t.closest && t.closest('.sndPop,.gear')) return;                 /* the gear and the sound buttons handle themselves */
+    closeSoundPops();
+  }, {passive:true});
+})();
+/* Before iOS 16 there is no overscroll-behavior: stop the one-screen landscape layout from being dragged and bouncing.
+   Sliders and the song list keep their own movement. */
+if(!(window.CSS && CSS.supports && CSS.supports('overscroll-behavior','none'))){
+  document.addEventListener('touchmove', function(e){
+    if(e.touches && e.touches.length>1) return;
+    if(!window.matchMedia('(min-width:640px) and (orientation:landscape)').matches) return;
+    for(var n=e.target; n && n!==document; n=n.parentNode){
+      if(n.type==='range') return;
+      if(n.classList && n.classList.contains('modalBody') && n.scrollHeight>n.clientHeight) return;
+    }
+    if(e.cancelable) e.preventDefault();
+  }, {passive:false});
+}
 function renderSounds(side){
   var bs = $(side==='left'?'sndL':'sndR').children;
   for(var i=0;i<bs.length;i++) bs[i].classList.toggle('sel', bs[i].dataset.s===S[side].sound);
@@ -885,9 +961,26 @@ function buildGuide(){
     var b=document.createElement('button'); b.textContent=sc[1]; b.dataset.id=sc[0];
     /* tap = call on the next bar; hold = call now */
     var holdT=null, held=false;
-    b.addEventListener('pointerdown', function(e){ e.preventDefault(); held=false; clearTimeout(holdT); holdT=setTimeout(function(){ held=true; if(sc[0]==='count') callCount(true); else callSectionNow(sc[0]); }, 380); });
-    var up=function(e){ clearTimeout(holdT); if(e.type==='pointerup' && !held){ if(sc[0]==='count') callCount(false); else callSection(sc[0]); } held=false; };
-    b.addEventListener('pointerup', up); b.addEventListener('pointercancel', up); b.addEventListener('pointerleave', function(){ clearTimeout(holdT); });
+    var press=function(){ held=false; clearTimeout(holdT); holdT=setTimeout(function(){ held=true; if(sc[0]==='count') callCount(true); else callSectionNow(sc[0]); }, 380); };
+    var tapCall=function(){ if(sc[0]==='count') callCount(false); else callSection(sc[0]); };
+    if(window.PointerEvent){
+      b.addEventListener('pointerdown', function(e){ e.preventDefault(); press(); });
+      var up=function(e){ clearTimeout(holdT); if(e.type==='pointerup' && !held) tapCall(); held=false; };
+      b.addEventListener('pointerup', up); b.addEventListener('pointercancel', up); b.addEventListener('pointerleave', function(){ clearTimeout(holdT); });
+    } else if('ontouchstart' in window){
+      /* older iPad: no preventDefault, so the page still scrolls from these buttons; a finger that moves is a scroll, not a call */
+      var sx=0, sy=0, live=false;
+      var drop=function(){ live=false; held=false; clearTimeout(holdT); };
+      b.addEventListener('touchstart', function(e){ if(e.targetTouches.length!==1){ drop(); return; } sx=e.targetTouches[0].clientX; sy=e.targetTouches[0].clientY; live=true; press(); }, {passive:true});
+      b.addEventListener('touchmove', function(e){ var p=e.targetTouches[0]; if(live && p && (Math.abs(p.clientX-sx)>10 || Math.abs(p.clientY-sy)>10)) drop(); }, {passive:true});
+      b.addEventListener('touchend', function(){ var fire=live && !held; drop(); if(fire) tapCall(); });
+      b.addEventListener('touchcancel', drop);
+    } else {
+      var md=false;
+      b.addEventListener('mousedown', function(e){ e.preventDefault(); md=true; press(); });
+      b.addEventListener('mouseup', function(){ clearTimeout(holdT); if(md && !held) tapCall(); md=false; held=false; });
+      b.addEventListener('mouseleave', function(){ clearTimeout(holdT); md=false; });
+    }
     b.addEventListener('contextmenu', function(e){ e.preventDefault(); });
     add.appendChild(b);
   });
@@ -1411,7 +1504,12 @@ renderAll();
 holdRepeat($('bpmUp'), function(){ setBpm(S.bpm+1); });
 holdRepeat($('bpmDown'), function(){ setBpm(S.bpm-1); });
 $('bpmSlider').addEventListener('input', function(){ setBpm(this.value); });
-$('tapBtn').addEventListener('pointerdown', function(e){ e.preventDefault(); tap(); });
+(function(){
+  var down=function(e){ e.preventDefault(); tap(); };
+  if(window.PointerEvent) $('tapBtn').addEventListener('pointerdown', down);
+  else if('ontouchstart' in window) $('tapBtn').addEventListener('touchstart', down, {passive:false});
+  else $('tapBtn').addEventListener('mousedown', down);
+})();
 ['left','right'].forEach(function(side){
   var cap=side==='left'?'L':'R';
   $('vol'+cap).addEventListener('input', function(){ S[side].vol=+this.value; $('vol'+cap+'v').textContent=this.value; persist(); });
