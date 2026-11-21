@@ -1,6 +1,6 @@
 {
  "v": 1,
- "updated": "2026-11-15T00:01:00.235Z",
+ "updated": "2026-11-21T10:57:23.050Z",
  "songs": [
   {
    "name": "One Way",
@@ -2446,6 +2446,159 @@
     "vol": 30,
     "count": true,
     "countTo": "bar",
+    "countIn": true
+   },
+   "accV": 2
+  },
+  {
+   "name": "Jesus At The Center",
+   "bpm": 66,
+   "sig": "4/4",
+   "accents": {
+    "3/4": [
+     2,
+     1,
+     1
+    ],
+    "4/4": [
+     2,
+     1,
+     1,
+     1
+    ],
+    "6/8": [
+     2,
+     1,
+     1,
+     1,
+     1,
+     1
+    ]
+   },
+   "left": {
+    "vol": 80,
+    "mute": false,
+    "sound": "beep",
+    "note": "q"
+   },
+   "right": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "e"
+   },
+   "pad": {
+    "on": true,
+    "key": 0,
+    "mode": "major",
+    "vol": 19
+   },
+   "guide": {
+    "vol": 30,
+    "count": true,
+    "countTo": "4",
+    "countIn": true
+   },
+   "accV": 2
+  },
+  {
+   "name": "In God We Trust",
+   "bpm": 80,
+   "sig": "4/4",
+   "accents": {
+    "3/4": [
+     2,
+     1,
+     1
+    ],
+    "4/4": [
+     2,
+     1,
+     1,
+     1
+    ],
+    "6/8": [
+     2,
+     1,
+     1,
+     1,
+     1,
+     1
+    ]
+   },
+   "left": {
+    "vol": 80,
+    "mute": false,
+    "sound": "beep",
+    "note": "q"
+   },
+   "right": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "e"
+   },
+   "pad": {
+    "on": false,
+    "key": 0,
+    "mode": "major",
+    "vol": 19
+   },
+   "guide": {
+    "vol": 30,
+    "count": true,
+    "countTo": "4",
+    "countIn": true
+   },
+   "accV": 2
+  },
+  {
+   "name": "You Raise Me Up",
+   "bpm": 60,
+   "sig": "4/4",
+   "accents": {
+    "3/4": [
+     2,
+     1,
+     1
+    ],
+    "4/4": [
+     2,
+     1,
+     1,
+     1
+    ],
+    "6/8": [
+     2,
+     1,
+     1,
+     1,
+     1,
+     1
+    ]
+   },
+   "left": {
+    "vol": 80,
+    "mute": false,
+    "sound": "beep",
+    "note": "q"
+   },
+   "right": {
+    "vol": 100,
+    "mute": false,
+    "sound": "beep",
+    "note": "e"
+   },
+   "pad": {
+    "on": false,
+    "key": 0,
+    "mode": "major",
+    "vol": 19
+   },
+   "guide": {
+    "vol": 30,
+    "count": true,
+    "countTo": "4",
     "countIn": true
    },
    "accV": 2
